@@ -93,6 +93,7 @@ GameObject:
   - component: {fileID: 6417080166661863116}
   - component: {fileID: 6417080166661863117}
   - component: {fileID: 6417080166661863115}
+  - component: {fileID: 6616535746810711711}
   m_Layer: 17
   m_Name: slime
   m_TagString: Untagged
@@ -109,7 +110,7 @@ Transform:
   m_GameObject: {fileID: 6417080166661863118}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 3, y: -2.956, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 3, y: 3, z: 1}
   m_Children:
   - {fileID: 6417080166396629319}
   m_Father: {fileID: 0}
@@ -192,3 +193,17 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.5, y: 0.3203125}
   m_EdgeRadius: 0
+--- !u!114 &6616535746810711711
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6417080166661863118}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1252618ab0a534e44b24d0e302934d1b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MoveTime: 10
+  StoppingDstiance: 0.0001

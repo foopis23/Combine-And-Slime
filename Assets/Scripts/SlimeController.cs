@@ -89,14 +89,15 @@ public class SlimeController : MonoBehaviour
             }
 
             if (selected != null) {
-                PlaceSelectedSlime(mouseWorldPos);
+                // PlaceSelectedSlime(mouseWorldPos);
+                selected.GetComponent<Slime>().SetDestination(roundToGrid(mouseWorldPos));
                 selected = null;
             }else if (!isDragging) {
                 selected = SelectSlime(mouseWorldPos);
                 if (selected != null) {
-                    SpriteRenderer renderer = GetSlimeShadow(selected);
-                    selectedShadow = renderer.gameObject;
-                    renderer.enabled = true;
+                    // SpriteRenderer renderer = GetSlimeShadow(selected);
+                    // selectedShadow = renderer.gameObject;
+                    // renderer.enabled = true;
                 }
             }
 
@@ -129,13 +130,13 @@ public class SlimeController : MonoBehaviour
             }
         }
 
-        if (selected != null)
-            selected.transform.position = new Vector3(mouseWorldPos.x, mouseWorldPos.y);
+        // if (selected != null)
+        //     selected.transform.position = new Vector3(mouseWorldPos.x, mouseWorldPos.y);
 
-        if (selectedShadow != null)
-        {
-            Vector3 gridWorldPos = roundToGrid(mouseWorldPos);
-            selectedShadow.transform.position = new Vector3(gridWorldPos.x, gridWorldPos.y, 0);
-        }
+        // if (selectedShadow != null)
+        // {
+        //     Vector3 gridWorldPos = roundToGrid(mouseWorldPos);
+        //     selectedShadow.transform.position = new Vector3(gridWorldPos.x, gridWorldPos.y, 0);
+        // }
     }
 }
