@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.sextonsoftware.events": {
+      "version": "https://github.com/foopis23/Callback-Events.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "9a125378b91b5037d9593d3142384fa661f715f3"
+    },
     "com.unity.2d.animation": {
       "version": "4.2.4",
       "depth": 0,

@@ -10,19 +10,34 @@ public class SlimeController : MonoBehaviour
     [SerializeField] private LayerMask selectionLayer;
     [SerializeField] private Tilemap tilemap;
     [SerializeField] private GameObject slimePrefab;
+    [SerializeField] private GameObject tileSelectionCursor;
 
     //internal properties
     private Camera mainCamera;
-    private GameObject selected;
-    private GameObject selectedShadow; //TODO: selectedShadow is going to be hacky but just fix it later?
+    private Slime currentSlime;
+    private Vector3Int currentSlimeTileLocation;
+    private GameObject currentSlimeObject;
+    private GameObject mergeWith;
+    private Dictionary<Vector3Int, GameObject> slimes;
     private Vector3 dragStartPos;
     private bool isDragging;
-    private bool hasSpawnedNewGuyLmao;
+    private bool hasSpawnedSplitFromDrag;
+    private bool isValidTile;
 
 
     void Start()
     {
+        slimes = new Dictionary<Vector3Int, GameObject>();
         mainCamera = Camera.main;
+        mergeWith = null;
+        isValidTile = false;
+
+        if (currentSlime == null) 
+        {
+            currentSlimeObject = GameObject.FindGameObjectWithTag("slime");
+            currentSlime = currentSlimeObject?.GetComponent<Slime>();
+            currentSlimeTileLocation = tilemap.WorldToCell(new Vector3(currentSlimeObject.transform.position.x, currentSlimeObject.transform.position.y, 0));
+        }
     }
 
     private GameObject SelectSlime(Vector3 mouseWorldPos)
@@ -40,6 +55,26 @@ public class SlimeController : MonoBehaviour
         }
     }
 
+    private void AddSlime(GameObject slime) {
+        Vector3Int gridPos = tilemap.WorldToCell(new Vector3(slime.transform.position.x, slime.transform.position.y, 0));
+        Debug.Log($"Add: {gridPos}");
+        slimes.Add(gridPos, slime);
+    }
+
+    private GameObject GetSlime(Vector3 worldPos) {
+        Vector3Int gridPos = tilemap.WorldToCell(new Vector3(worldPos.x,worldPos.y, 0));
+        Debug.Log($"Get: {gridPos}");
+        if (!slimes.ContainsKey(gridPos)) return null;
+
+        return slimes[gridPos];
+    }
+
+    private bool RemoveSlime(Vector3 worldPos) {
+        Vector3Int gridPos = tilemap.WorldToCell(new Vector3(worldPos.x,worldPos.y, 0));
+        Debug.Log($"Add: {gridPos}");
+        return slimes.Remove(gridPos);
+    }
+
     private Vector3 roundToGrid(Vector3 pos)
     {
         Vector3Int cellPos = tilemap.WorldToCell(new Vector3(pos.x, pos.y, 0));
@@ -51,54 +86,45 @@ public class SlimeController : MonoBehaviour
     {
         Vector3 gridWorldPos = roundToGrid(mouseWorldPos);
         slime.transform.position = new Vector2(gridWorldPos.x, gridWorldPos.y);
-        SpriteRenderer spriteRenderer = selected.GetComponent<SpriteRenderer>();
-        spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, 1.0f);
     }
 
-    private void PlaceSelectedSlime(Vector3 mouseWorldPos)
-    {
-        PlaceSlime(mouseWorldPos, selected);
-        if (selectedShadow != null)
-            selectedShadow.GetComponent<SpriteRenderer>().enabled = false;
-        selectedShadow = null;
-    }
-
-    private SpriteRenderer GetSlimeShadow(GameObject slime) {
-        SpriteRenderer[] renderers = slime.GetComponentsInChildren<SpriteRenderer>();
-        foreach (SpriteRenderer renderer in renderers)
-        {
-            if (!renderer.gameObject.Equals(selected))
-            {
-                return renderer;
+    private void MoveSelectedSlime(Vector3 worldPos) {
+        GameObject temp = GetSlime(worldPos);
+        
+        if (temp != null) {
+            Slime slime = temp.GetComponent<Slime>();
+            
+            if (currentSlime.CanMerge() && slime.Scale == currentSlime.Scale) {
+                currentSlime.SetDestination(roundToGrid(worldPos));
+                currentSlimeTileLocation = tilemap.WorldToCell(new Vector3(worldPos.x, worldPos.y, 0));
+                mergeWith = temp;
+                RemoveSlime(worldPos);
             }
-        }
 
-        return null;
+        }else{
+            currentSlimeTileLocation = tilemap.WorldToCell(new Vector3(worldPos.x, worldPos.y, 0));
+            currentSlime.SetDestination(roundToGrid(worldPos));
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
         Vector3 mouseWorldPos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+        Vector3Int mapTileLocation = tilemap.WorldToCell(new Vector3(mouseWorldPos.x, mouseWorldPos.y, 0));
 
         if (Input.GetMouseButtonUp(0))
         {
             if (isDragging)
             {
-                hasSpawnedNewGuyLmao = false;
-            }
-
-            if (selected != null) {
-                // PlaceSelectedSlime(mouseWorldPos);
-                selected.GetComponent<Slime>().SetDestination(roundToGrid(mouseWorldPos));
-                selected = null;
-            }else if (!isDragging) {
-                selected = SelectSlime(mouseWorldPos);
-                if (selected != null) {
-                    // SpriteRenderer renderer = GetSlimeShadow(selected);
-                    // selectedShadow = renderer.gameObject;
-                    // renderer.enabled = true;
+                if (hasSpawnedSplitFromDrag && isValidTile) {
+                    MoveSelectedSlime(mouseWorldPos);
                 }
+
+                hasSpawnedSplitFromDrag = false;
+
+            }else if (currentSlimeObject != null && isValidTile) {
+                MoveSelectedSlime(mouseWorldPos);
             }
 
             isDragging = false;
@@ -116,27 +142,33 @@ public class SlimeController : MonoBehaviour
             }
         }
 
-        if (isDragging && !hasSpawnedNewGuyLmao)
+        if (isDragging && !hasSpawnedSplitFromDrag)
         {
             GameObject slime = SelectSlime(mainCamera.ScreenToWorldPoint(dragStartPos));
-            if (slime != null)
+            if (slime != null && slime.Equals(currentSlimeObject) && currentSlime.Split())
             {
-                slime.transform.localScale = new Vector3(1, 1, 1);
-                selected = Instantiate(slimePrefab);
-                SpriteRenderer renderer = GetSlimeShadow(selected);
-                selectedShadow = renderer.gameObject;
-                renderer.enabled = true;
-                hasSpawnedNewGuyLmao = true;
+                int newScale = currentSlime.Scale;
+                AddSlime(currentSlimeObject);
+                currentSlimeObject = Instantiate(slimePrefab, slime.transform.position, Quaternion.Euler(0, 0, 0));
+                currentSlime = currentSlimeObject.GetComponent<Slime>();
+                currentSlime.SetScale(newScale);
+                hasSpawnedSplitFromDrag = true;
             }
         }
 
-        // if (selected != null)
-        //     selected.transform.position = new Vector3(mouseWorldPos.x, mouseWorldPos.y);
+        if (mergeWith != null && !currentSlime.IsMoving) {
+            currentSlime.Merge();
+            Destroy(mergeWith);
+            mergeWith = null;
+        }
 
-        // if (selectedShadow != null)
-        // {
-        //     Vector3 gridWorldPos = roundToGrid(mouseWorldPos);
-        //     selectedShadow.transform.position = new Vector3(gridWorldPos.x, gridWorldPos.y, 0);
-        // }
+        tileSelectionCursor.transform.position = roundToGrid(mouseWorldPos);
+        
+        isValidTile = (mapTileLocation.x == currentSlimeTileLocation.x || mapTileLocation.y == currentSlimeTileLocation.y) && tilemap.HasTile(mapTileLocation);
+        if (isValidTile) {
+            tileSelectionCursor.GetComponent<SpriteRenderer>().color = new Color(255, 255, 255, 0.5f);
+        }else{
+           tileSelectionCursor.GetComponent<SpriteRenderer>().color = new Color(255, 0, 0, 0.5f); 
+        }
     }
 }
