@@ -45,6 +45,9 @@ TagManager:
   - name: Ground
     uniqueID: 3869490625
     locked: 0
+  - name: Overlay
+    uniqueID: 1196937783
+    locked: 0
   - name: Shadow
     uniqueID: 3914379619
     locked: 0
