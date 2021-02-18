@@ -22,6 +22,8 @@ public class SlimeController : MonoBehaviour
     private GameObject mergeWith;
     private Dictionary<Vector3Int, GameObject> slimes;
     private Vector3 dragStartPos;
+    private HashSet<Vector3Int> validMoves;
+    private Dictionary<Vector3Int, Vector3Int> mouseOverTilePositions;
     private bool isDragging;
     private bool hasSpawnedSplitFromDrag;
     private bool isValidTile;
@@ -39,7 +41,7 @@ public class SlimeController : MonoBehaviour
             currentSlimeObject = GameObject.FindGameObjectWithTag("slime");
             currentSlime = currentSlimeObject?.GetComponent<Slime>();
             currentSlimeTileLocation = tilemap.WorldToCell(new Vector3(currentSlimeObject.transform.position.x, currentSlimeObject.transform.position.y, 0));
-            ShowPossibleMoves();
+            GetValidMoves();
         }
     }
 
@@ -94,145 +96,80 @@ public class SlimeController : MonoBehaviour
         slime.transform.position = new Vector2(gridWorldPos.x, gridWorldPos.y);
     }
 
-    private void ShowPossibleMoves()
+    private void GetValidMoves()
     {
         overlay.ClearAllTiles();
+        validMoves = new HashSet<Vector3Int>();
+        mouseOverTilePositions = new Dictionary<Vector3Int, Vector3Int>();
         int width = currentSlime.Scale + 1;
 
         Debug.Log(width);
 
-        //neg x
-        Vector3Int testPos = new Vector3Int(currentSlimeTileLocation.x - 1, currentSlimeTileLocation.y, currentSlimeTileLocation.z);
-        while (tilemap.HasTile(testPos))
-        {
-            //check if every tile in the width is valid
-            for (int w=0; w < width; w++) {
-                Vector3Int widthTestPos = new Vector3Int(testPos.x, testPos.y+w, testPos.z);
-                if (!tilemap.HasTile(widthTestPos)) break;
-            }
+        Vector3Int testPos;
+        HashSet<Vector3Int> validTiles = new HashSet<Vector3Int>();
 
-            //add a tile for each tile in the width
-            for (int w=0; w < width; w++) {
-                Vector3Int widthTestPos = new Vector3Int(testPos.x, testPos.y+w, testPos.z);
-                overlay.SetTile(widthTestPos, possibleMoveTile);
+        Vector3Int[] directions = {
+            new Vector3Int( 1,  0, 0),
+            new Vector3Int(-1,  0, 0),
+            new Vector3Int( 0,  1, 0),
+            new Vector3Int( 0, -1, 0)
+        };
+
+        foreach(Vector3Int direction in directions)
+        {
+            testPos = new Vector3Int(currentSlimeTileLocation.x, currentSlimeTileLocation.y, currentSlimeTileLocation.z);
+            HashSet<Vector3Int> possibleValidTiles;
+            bool valid;
+            do
+            {
+                testPos = testPos + direction;
+                possibleValidTiles = new HashSet<Vector3Int>();
+                valid = true;
+                //check if every tile in the area covered by the slime is valid
+                for(int h = 0; h < width; h++)
+                {
+                    for(int k = 0; k < width; k++)
+                    {
+                        Vector3Int slimeTestPos = new Vector3Int(testPos.x + h, testPos.y + k, testPos.z);
+                        possibleValidTiles.Add(slimeTestPos);
+                        if (!tilemap.HasTile(slimeTestPos))
+                        {
+                            valid = false;
+                            break;
+                        }
+                    }
+                }
+
+                if(valid)
+                {
+                    // map the tiles the the slime will take up to the actual slime position the move would put you at
+                    foreach(Vector3Int tilePos in possibleValidTiles)
+                    {
+                        if(mouseOverTilePositions.ContainsKey(tilePos))
+                        {
+                            mouseOverTilePositions.Remove(tilePos);
+                        }
+
+                        mouseOverTilePositions.Add(tilePos, testPos);
+                    }
+
+                    // add the move to valid moves
+                    validMoves.Add(testPos);
+
+                    // add the tiles to valid tiles
+                    validTiles.UnionWith(possibleValidTiles);
+                }
             }
-            
-            testPos = new Vector3Int(testPos.x - 1, testPos.y, testPos.z);
+            while(valid);
         }
 
-        //pos x
-        testPos = new Vector3Int(currentSlimeTileLocation.x + 1, currentSlimeTileLocation.y, currentSlimeTileLocation.z);
-        while (tilemap.HasTile(testPos))
+        foreach(Vector3Int tilePos in validTiles)
         {
-            //check if every tile in the width is valid
-            for (int w=0; w < width; w++) {
-                Vector3Int widthTestPos = new Vector3Int(testPos.x, testPos.y+w, testPos.z);
-                if (!tilemap.HasTile(widthTestPos)) break;
-            }
-
-            //add a tile for each tile in the width
-            for (int w=0; w < width; w++) {
-                Vector3Int widthTestPos = new Vector3Int(testPos.x, testPos.y+w, testPos.z);
-                overlay.SetTile(widthTestPos, possibleMoveTile);
-            }
-
-            testPos = new Vector3Int(testPos.x + 1, testPos.y, testPos.z);
-        }
-
-        //neg y
-        testPos = new Vector3Int(currentSlimeTileLocation.x, currentSlimeTileLocation.y - 1, currentSlimeTileLocation.z);
-        while (tilemap.HasTile(testPos))
-        {
-            //check if every tile in the width is valid
-            for (int w=0; w < width; w++) {
-                Vector3Int widthTestPos = new Vector3Int(testPos.x+w, testPos.y, testPos.z);
-                if (!tilemap.HasTile(widthTestPos)) break;
-            }
-
-            //add a tile for each tile in the width
-            for (int w=0; w < width; w++) {
-                Vector3Int widthTestPos = new Vector3Int(testPos.x+w, testPos.y, testPos.z);
-                overlay.SetTile(widthTestPos, possibleMoveTile);
-            }
-
-            testPos = new Vector3Int(testPos.x, testPos.y - 1, testPos.z);
-        }
-
-        //pos y
-        testPos = new Vector3Int(currentSlimeTileLocation.x, currentSlimeTileLocation.y + 1, currentSlimeTileLocation.z);
-        while (tilemap.HasTile(testPos))
-        {
-            //check if every tile in the width is valid
-            for (int w=0; w < width; w++) {
-                Vector3Int widthTestPos = new Vector3Int(testPos.x+w, testPos.y, testPos.z);
-                if (!tilemap.HasTile(widthTestPos)) break;
-            }
-
-            //add a tile for each tile in the width
-            for (int w=0; w < width; w++) {
-                Vector3Int widthTestPos = new Vector3Int(testPos.x+w, testPos.y, testPos.z);
-                overlay.SetTile(widthTestPos, possibleMoveTile);
-            }
-
-            testPos = new Vector3Int(testPos.x, testPos.y + 1, testPos.z);
+            overlay.SetTile(tilePos, possibleMoveTile);
         }
     }
 
-    private bool IsValidMove(Vector3Int mapTileLocation)
-    {
-        if ((mapTileLocation.x == currentSlimeTileLocation.x || mapTileLocation.y == currentSlimeTileLocation.y) && tilemap.HasTile(mapTileLocation))
-        {
-            if (currentSlimeTileLocation.x == mapTileLocation.x)
-            {
-                int start;
-                int end;
-
-                if (mapTileLocation.y > currentSlimeTileLocation.y)
-                {
-                    start = currentSlimeTileLocation.y;
-                    end = mapTileLocation.y;
-                }
-                else
-                {
-                    start = mapTileLocation.y;
-                    end = currentSlimeTileLocation.y;
-                }
-
-                for (int i = start; i <= end; i++)
-                {
-                    Vector3Int testPos = new Vector3Int(currentSlimeTileLocation.x, i, 0);
-                    if (!tilemap.HasTile(testPos)) return false;
-                }
-            }
-            else
-            {
-                int start;
-                int end;
-
-                if (mapTileLocation.x > currentSlimeTileLocation.x)
-                {
-                    start = currentSlimeTileLocation.x;
-                    end = mapTileLocation.x;
-                }
-                else
-                {
-                    start = mapTileLocation.x;
-                    end = currentSlimeTileLocation.x;
-                }
-
-                for (int i = start; i <= end; i++)
-                {
-                    Vector3Int testPos = new Vector3Int(i, currentSlimeTileLocation.y, 0);
-                    if (!tilemap.HasTile(testPos)) return false;
-                }
-            }
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
+    private bool IsValidMove(Vector3Int mapTileLocation) => validMoves.Contains(mapTileLocation);
 
     private void MoveSelectedSlime(Vector3 worldPos)
     {
@@ -247,7 +184,7 @@ public class SlimeController : MonoBehaviour
                 Vector3 pos = roundToGrid(worldPos);
                 currentSlime.SetDestination(new Vector3(pos.x, pos.y, currentSlimeObject.transform.position.z));
                 currentSlimeTileLocation = tilemap.WorldToCell(new Vector3(worldPos.x, worldPos.y, 0));
-                ShowPossibleMoves();
+                GetValidMoves();
                 mergeWith = temp;
                 RemoveSlime(worldPos);
             }
@@ -258,7 +195,7 @@ public class SlimeController : MonoBehaviour
             Vector3 pos = roundToGrid(worldPos);
             currentSlime.SetDestination(new Vector3(pos.x, pos.y, currentSlimeObject.transform.position.z));
             currentSlimeTileLocation = tilemap.WorldToCell(new Vector3(worldPos.x, worldPos.y, 0));
-            ShowPossibleMoves();
+            GetValidMoves();
         }
     }
 
