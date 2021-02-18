@@ -9,10 +9,11 @@ public class SlimeController : MonoBehaviour
     [SerializeField] private float dragDeadZone = 10.0f;
     [SerializeField] private LayerMask selectionLayer;
     [SerializeField] private Tilemap overlay;
+    [SerializeField] private Tilemap overlay2;
     [SerializeField] private TileBase possibleMoveTile;
+    [SerializeField] private TileBase validMoveTile;
     [SerializeField] private Tilemap tilemap;
     [SerializeField] private GameObject slimePrefab;
-    [SerializeField] private GameObject tileSelectionCursor;
 
     //internal properties
     private Camera mainCamera;
@@ -26,7 +27,6 @@ public class SlimeController : MonoBehaviour
     private Dictionary<Vector3Int, Vector3Int> mouseOverTilePositions;
     private bool isDragging;
     private bool hasSpawnedSplitFromDrag;
-    private bool isValidTile;
 
 
     void Start()
@@ -34,7 +34,6 @@ public class SlimeController : MonoBehaviour
         slimes = new Dictionary<Vector3Int, GameObject>();
         mainCamera = Camera.main;
         mergeWith = null;
-        isValidTile = false;
 
         if (currentSlime == null)
         {
@@ -108,6 +107,16 @@ public class SlimeController : MonoBehaviour
         Vector3Int testPos;
         HashSet<Vector3Int> validTiles = new HashSet<Vector3Int>();
 
+        // get the tiles taken up by the slime
+        HashSet<Vector3Int> slimeTiles = new HashSet<Vector3Int>();
+        for(int h = 0; h < width; h++)
+        {
+            for(int k = 0; k < width; k++)
+            {
+                slimeTiles.Add(new Vector3Int(currentSlimeTileLocation.x + h, currentSlimeTileLocation.y + k, currentSlimeTileLocation.z));
+            }
+        }
+
         Vector3Int[] directions = {
             new Vector3Int( 1,  0, 0),
             new Vector3Int(-1,  0, 0),
@@ -140,17 +149,18 @@ public class SlimeController : MonoBehaviour
                     }
                 }
 
+                possibleValidTiles.ExceptWith(slimeTiles);
+
                 if(valid)
                 {
                     // map the tiles the the slime will take up to the actual slime position the move would put you at
                     foreach(Vector3Int tilePos in possibleValidTiles)
                     {
-                        if(mouseOverTilePositions.ContainsKey(tilePos))
+                        if(!mouseOverTilePositions.ContainsKey(tilePos))
                         {
-                            mouseOverTilePositions.Remove(tilePos);
+                            mouseOverTilePositions.Add(tilePos, testPos);
                         }
 
-                        mouseOverTilePositions.Add(tilePos, testPos);
                     }
 
                     // add the move to valid moves
@@ -169,7 +179,7 @@ public class SlimeController : MonoBehaviour
         }
     }
 
-    private bool IsValidMove(Vector3Int mapTileLocation) => validMoves.Contains(mapTileLocation);
+    private bool IsValidMove(Vector3Int tilePos) => validMoves.Contains(tilePos);
 
     private void MoveSelectedSlime(Vector3 worldPos)
     {
@@ -203,23 +213,25 @@ public class SlimeController : MonoBehaviour
     void Update()
     {
         Vector3 mouseWorldPos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-        Vector3Int mapTileLocation = tilemap.WorldToCell(new Vector3(mouseWorldPos.x, mouseWorldPos.y, 0));
+        Vector3Int mouseOverTileLocation = tilemap.WorldToCell(new Vector3(mouseWorldPos.x, mouseWorldPos.y, 0));
+
+        bool isValidSelectionTile = overlay.HasTile(mouseOverTileLocation);
 
         if (Input.GetMouseButtonUp(0))
         {
             if (isDragging)
             {
-                if (hasSpawnedSplitFromDrag && isValidTile)
+                if (hasSpawnedSplitFromDrag && isValidSelectionTile)
                 {
-                    MoveSelectedSlime(mouseWorldPos);
+                    MoveSelectedSlime(tilemap.CellToWorld(mouseOverTilePositions[mouseOverTileLocation]));
                 }
 
                 hasSpawnedSplitFromDrag = false;
 
             }
-            else if (currentSlimeObject != null && isValidTile)
+            else if (currentSlimeObject != null && isValidSelectionTile)
             {
-                MoveSelectedSlime(mouseWorldPos);
+                MoveSelectedSlime(tilemap.CellToWorld(mouseOverTilePositions[mouseOverTileLocation]));
             }
 
             isDragging = false;
@@ -258,16 +270,17 @@ public class SlimeController : MonoBehaviour
             mergeWith = null;
         }
 
-        tileSelectionCursor.transform.position = roundToGrid(mouseWorldPos);
-        isValidTile = IsValidMove(mapTileLocation);
-
-        if (isValidTile)
+        overlay2.ClearAllTiles();
+        if (isValidSelectionTile)
         {
-            tileSelectionCursor.GetComponent<SpriteRenderer>().color = new Color(0, 0, 0, 0.5f);
-        }
-        else
-        {
-            tileSelectionCursor.GetComponent<SpriteRenderer>().color = new Color(255, 0, 0, 0.5f);
+            for(int h = 0; h < currentSlime.Scale + 1; h++)
+            {
+                for(int k = 0; k < currentSlime.Scale + 1; k++)
+                {
+                    Vector3Int moveTilePos = mouseOverTilePositions[mouseOverTileLocation];
+                    overlay2.SetTile(new Vector3Int(moveTilePos.x + h, moveTilePos.y + k, moveTilePos.z), validMoveTile);
+                }
+            }
         }
     }
 }
