@@ -18,29 +18,32 @@ public class MenuController : MonoBehaviour
     {
         MainMenuAnimator = MainMenu.GetComponent<Animator>();
         LevelSelectAnimator = LevelSelect.GetComponent<Animator>();
-        // OptionsAnimator = LevelSelect.GetComponent<Animator>();
+        OptionsAnimator = Options.GetComponent<Animator>();
+        OptionsAnimator.Play("SlideRightOut");
+        LevelSelectAnimator.Play("SlideRightOut");
     }
 
     public void OnPlayClicked()
     {
         MainMenuAnimator.Play("SlideLeftOut");
         LevelSelectAnimator.Play("SlideLeftIn");
-        LevelSelectUI.SetActive(true);
-        //MainMenuUI.SetActive(false);
     }
 
-    void OnOptionsClicked()
+    public void OnOptionsClicked()
     {
-
+        MainMenuAnimator.Play("SlideLeftOut");
+        OptionsAnimator.Play("SlideLeftIn");
     }
 
-    void OnOptionsBackClicked()
+    public void OnOptionsBackClicked()
     {
-
+        MainMenuAnimator.Play("SlideRightIn");
+        OptionsAnimator.Play("SlideRightOut");
     }
 
-    void OnLevelSelectBackClicked()
+    public void OnLevelSelectBackClicked()
     {
-
+        MainMenuAnimator.Play("SlideRightIn");
+        LevelSelectAnimator.Play("SlideRightOut");
     }
 }
