@@ -4,22 +4,6 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using CallbackEvents;
 
-public class ActivateButtonContext : EventContext {
-    public TileBase ButtonType;
-
-    public ActivateButtonContext(TileBase ButtonType) {
-        this.ButtonType = ButtonType;
-    }
-}
-
-public class DeactivateButtonContext : EventContext {
-    public TileBase ButtonType;
-
-    public DeactivateButtonContext(TileBase ButtonType) {
-        this.ButtonType = ButtonType;
-    }
-}
-
 public class SlimeController : MonoBehaviour
 {
     //editor properties

@@ -1,6 +1,27 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using CallbackEvents;
+
+public class SlimeStartMovingContext : EventContext {
+    public Vector3Int GridLocation;
+    public Slime Slime;
+
+    public SlimeStartMovingContext(Vector3Int GridLocation, Slime Slime) {
+        this.GridLocation = GridLocation;
+        this.Slime = Slime;
+    }
+}
+
+public class SlimeFinishMovingContext : EventContext {
+    public Vector3Int GridLocation;
+    public Slime Slime;
+
+    public SlimeFinishMovingContext(Vector3Int GridLocation, Slime Slime) {
+        this.GridLocation = GridLocation;
+        this.Slime = Slime;
+    }    
+}
 
 public class Slime : MonoBehaviour
 {
