@@ -12,7 +12,6 @@ public class SlimeController : MonoBehaviour
     [SerializeField] private Tilemap cursorOverlay;
     [SerializeField] private TileBase possibleMoveTile;
     [SerializeField] private TileBase validMoveTile;
-    [SerializeField] private Tilemap buttonMap;
     [SerializeField] private Tilemap tilemap;
     [SerializeField] private GameObject slimePrefab;
 
@@ -259,8 +258,8 @@ public class SlimeController : MonoBehaviour
     }
 
     private void SetButtonActive(Vector3 slimePos, bool isActive) {
-        Vector3Int slimeTilePos = buttonMap.WorldToCell(new Vector3(slimePos.x, slimePos.y, 0));
-        SetButtonActive(slimeTilePos, isActive);
+        // Vector3Int slimeTilePos = buttonMap.WorldToCell(new Vector3(slimePos.x, slimePos.y, 0));
+        // SetButtonActive(slimeTilePos, isActive);
     }
 
     // Update is called once per frame

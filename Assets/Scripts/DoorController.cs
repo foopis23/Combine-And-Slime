@@ -74,11 +74,12 @@ public class DoorController : MonoBehaviour
 
     private void Start()
     {
+        DoorLookUp = new Dictionary<ButtonType, ButtonDoorData>();
         GetAllDoors();
 
         EventSystem.Current.RegisterEventListener<ActivateButtonContext>(OnActivateButton);
         EventSystem.Current.RegisterEventListener<DeactivateButtonContext>(OnDeactiveButton);
-
+        
     }
 
     private ButtonType LookUpAssociation(TileBase door) {
