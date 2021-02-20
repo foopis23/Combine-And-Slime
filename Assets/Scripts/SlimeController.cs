@@ -248,14 +248,14 @@ public class SlimeController : MonoBehaviour
     }
 
     private void SetButtonActive(Vector3Int slimeTilePos, bool isActive) {
-        if (buttonMap.HasTile(slimeTilePos)) {
-            TileBase tile = buttonMap.GetTile(slimeTilePos);
-            if (isActive) {
-                EventSystem.Current.FireEvent(new ActivateButtonContext(tile));
-            }else{
-                EventSystem.Current.FireEvent(new DeactivateButtonContext(tile));
-            }
-        }
+        // if (buttonMap.HasTile(slimeTilePos)) {
+        //     TileBase tile = buttonMap.GetTile(slimeTilePos);
+        //     if (isActive) {
+        //         EventSystem.Current.FireEvent(new ActivateButtonContext(tile));
+        //     }else{
+        //         EventSystem.Current.FireEvent(new DeactivateButtonContext(tile));
+        //     }
+        // }
     }
 
     private void SetButtonActive(Vector3 slimePos, bool isActive) {

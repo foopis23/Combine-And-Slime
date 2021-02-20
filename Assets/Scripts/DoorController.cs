@@ -9,8 +9,7 @@ using CallbackEvents;
 [Serializable]
 public struct SerializedDoorData
 {
-    public TileBase buttonTile;
-    public TileBase doorTile;
+    public TileBase[] doorTile;
 }
 
 // storing runtime door data
@@ -66,18 +65,15 @@ public class ButtonDoorData
 public class DoorController : MonoBehaviour
 {
     //editor properties
-    [SerializeField] private TileBase buttonType; //the button to respond to
     [SerializeField] private Tilemap doorMap;
     [SerializeField] private Tilemap groundMap;
     [SerializeField] private SerializedDoorData[] doorAssociationData;
 
     //internal properties
-    private Dictionary<TileBase, ButtonDoorData> DoorLookUp;
+    private Dictionary<ButtonType, ButtonDoorData> DoorLookUp;
 
     private void Start()
     {
-        DoorLookUp = new Dictionary<TileBase, ButtonDoorData>();
-
         GetAllDoors();
 
         EventSystem.Current.RegisterEventListener<ActivateButtonContext>(OnActivateButton);
@@ -85,17 +81,14 @@ public class DoorController : MonoBehaviour
 
     }
 
-    private TileBase LookUpAssociation(TileBase tile)
-    {
-        foreach (SerializedDoorData door in doorAssociationData)
-        {
-            if (door.doorTile.Equals(tile))
-            {
-                return door.buttonTile;
+    private ButtonType LookUpAssociation(TileBase door) {
+        for(int i=0; i<doorAssociationData.Length; i++) {
+            foreach(TileBase tile in doorAssociationData[i].doorTile) {
+                if (tile.Equals(door)) return (ButtonType)i;
             }
         }
-
-        return null;
+        
+        throw new Exception();
     }
 
     private void GetAllDoors()
@@ -108,13 +101,17 @@ public class DoorController : MonoBehaviour
             if (doorMap.HasTile(localPlace))
             {
                 TileBase doorTile = doorMap.GetTile(localPlace);
-                TileBase buttonTile = LookUpAssociation(doorTile);
+                ButtonType buttonType;
 
-                if (buttonTile == null) continue;
+                try{
+                    buttonType = LookUpAssociation(doorTile);
+                }catch(Exception e) {
+                    continue;
+                }
 
-                if (!DoorLookUp.ContainsKey(buttonTile))
+                if (!DoorLookUp.ContainsKey(buttonType))
                 {
-                    DoorLookUp[buttonTile] = new ButtonDoorData();
+                    DoorLookUp[buttonType] = new ButtonDoorData();
                 }
 
                 DoorData doorData = new DoorData();
@@ -124,24 +121,22 @@ public class DoorController : MonoBehaviour
                 Vector3Int groundTileLoc = new Vector3Int(localPlace.x, localPlace.y, 0);
                 doorData.groundTile = groundMap.GetTile(groundTileLoc);
                 groundMap.SetTile(groundTileLoc, null);
-                DoorLookUp[buttonTile].doors.Add(doorData);
+                DoorLookUp[buttonType].doors.Add(doorData);
             }
         }
     }
 
     public void OnActivateButton(ActivateButtonContext ctx)
     {
-        if (ctx.ButtonType == null) return;
         if (!DoorLookUp.ContainsKey(ctx.ButtonType)) return;
 
-        DoorLookUp[buttonType].Activate(doorMap, groundMap);
+        DoorLookUp[ctx.ButtonType].Activate(doorMap, groundMap);
     }
 
     public void OnDeactiveButton(DeactivateButtonContext ctx)
     {
-        if (ctx.ButtonType == null) return;
         if (!DoorLookUp.ContainsKey(ctx.ButtonType)) return;
 
-        DoorLookUp[buttonType].Deactivate(doorMap, groundMap);
+        DoorLookUp[ctx.ButtonType].Deactivate(doorMap, groundMap);
     }
 }
