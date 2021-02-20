@@ -5,6 +5,10 @@ using CallbackEvents;
 
 public class SlimeController : MonoBehaviour
 {
+    public static int moveCount;
+    public static int mergeCount;
+    public static int splitCount;
+
     //editor properties
     [SerializeField] private LayerMask selectionLayer;
     [SerializeField] private TileBase validMoveTile;
@@ -41,6 +45,10 @@ public class SlimeController : MonoBehaviour
         mergeTarget = null;
         getMoves = true;
         performSplit = false;
+
+        moveCount = 0;
+        mergeCount = 0;
+        splitCount = 0;
 
         foreach(Slime slime in placedSlimes)
         {
@@ -269,6 +277,7 @@ public class SlimeController : MonoBehaviour
         }
 
         currentSlime.Move(tileLocation);
+        moveCount++;
     }
 
     // Update is called once per frame
@@ -285,6 +294,7 @@ public class SlimeController : MonoBehaviour
             {
                 RemoveSlime(mergeTarget);
                 currentSlime.MergeWith(mergeTarget, mergeLocationFromTargetLocation[mergeTarget.TileLocation]);
+                mergeCount++;
                 mergeTarget = null;
                 getMoves = true;
             }
@@ -327,6 +337,7 @@ public class SlimeController : MonoBehaviour
                         currentSlime = currentSlime.Split(moveLocationFromMouseTileLocation[mouseTileLocation]);
                         AddSlime(splitSlime);
                         performSplit = false;
+                        splitCount++;
                     }
                     else
                     {
