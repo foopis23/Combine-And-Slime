@@ -3,22 +3,6 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using CallbackEvents;
 
-public class ActivateButtonContext : EventContext {
-    public TileBase ButtonType;
-
-    public ActivateButtonContext(TileBase ButtonType) {
-        this.ButtonType = ButtonType;
-    }
-}
-
-public class DeactivateButtonContext : EventContext {
-    public TileBase ButtonType;
-
-    public DeactivateButtonContext(TileBase ButtonType) {
-        this.ButtonType = ButtonType;
-    }
-}
-
 public class SlimeController : MonoBehaviour
 {
     //editor properties
@@ -28,7 +12,6 @@ public class SlimeController : MonoBehaviour
     [SerializeField] private TileBase possibleSplitTile;
     [SerializeField] private TileBase possibleMergeTile;
     [SerializeField] private Tilemap tilemap;
-    [SerializeField] private Tilemap buttonMap;
     [SerializeField] private Tilemap movementOverlay;
     [SerializeField] private Tilemap cursorOverlay;
     [SerializeField] private Slime startingSlime;
@@ -271,28 +254,6 @@ public class SlimeController : MonoBehaviour
         }
 
         currentSlime.Move(tileLocation);
-    }
-
-    private void SetButtonActive(Vector3Int slimeTilePos, bool isActive)
-    {
-        if (buttonMap.HasTile(slimeTilePos))
-        {
-            TileBase tile = buttonMap.GetTile(slimeTilePos);
-            if (isActive)
-            {
-                EventSystem.Current.FireEvent(new ActivateButtonContext(tile));
-            }
-            else
-            {
-                EventSystem.Current.FireEvent(new DeactivateButtonContext(tile));
-            }
-        }
-    }
-
-    private void SetButtonActive(Vector3 slimePos, bool isActive)
-    {
-        Vector3Int slimeTilePos = buttonMap.WorldToCell(new Vector3(slimePos.x, slimePos.y, 0));
-        SetButtonActive(slimeTilePos, isActive);
     }
 
     // Update is called once per frame

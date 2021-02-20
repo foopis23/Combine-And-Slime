@@ -603,7 +603,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 743931532}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 5.3050528, y: -1.7214494, z: 1163.6904}
+  m_LocalPosition: {x: 5.363, y: -1.23, z: 1163.6904}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1054812229}
@@ -702,8 +702,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 1341928433}
   - {fileID: 1041789352}
+  - {fileID: 1341928433}
   - {fileID: 1059286025}
   - {fileID: 1732176224}
   m_Father: {fileID: 0}
@@ -738,7 +738,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 780917209}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1041789353
 MonoBehaviour:
@@ -755,12 +755,14 @@ MonoBehaviour:
   selectionLayer:
     serializedVersion: 2
     m_Bits: 131072
+  validMoveTile: {fileID: 11400000, guid: ebfcf0c28e0008a4aab14e0a95cdf8f1, type: 2}
+  possibleMoveTile: {fileID: 11400000, guid: aea01de6c9034ea4a9ad5ffc99f11140, type: 2}
+  possibleSplitTile: {fileID: 11400000, guid: d59c21af7334ae04a9795cf95a5d4225, type: 2}
+  possibleMergeTile: {fileID: 11400000, guid: f6d972cb5b5b7a24ab4518ed855ba50e, type: 2}
+  tilemap: {fileID: 1978646950}
   movementOverlay: {fileID: 1830732974}
   cursorOverlay: {fileID: 1614461042}
-  possibleMoveTile: {fileID: 11400000, guid: aea01de6c9034ea4a9ad5ffc99f11140, type: 2}
-  validMoveTile: {fileID: 11400000, guid: ebfcf0c28e0008a4aab14e0a95cdf8f1, type: 2}
-  tilemap: {fileID: 1978646950}
-  slimePrefab: {fileID: 6417080166661863118, guid: 2417512f1734b754cb298486e4e0c9d7, type: 3}
+  startingSlime: {fileID: 1137562855}
 --- !u!1 &1054812228
 GameObject:
   m_ObjectHideFlags: 0
@@ -798,6 +800,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8177059248208691869, guid: 87dcc9633f65ac24aa3f475f1731ef3c, type: 3}
   m_PrefabInstance: {fileID: 8177059246378285115}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1137562855 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6616535746810711711, guid: 2417512f1734b754cb298486e4e0c9d7, type: 3}
+  m_PrefabInstance: {fileID: 182978630}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1252618ab0a534e44b24d0e302934d1b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &1341928433 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 221073151560141841, guid: 958691330b067434cb6dfef2ace31aa8, type: 3}
@@ -1256,7 +1269,7 @@ GameObject:
   - component: {fileID: 1978646949}
   m_Layer: 0
   m_Name: Ground
-  m_TagString: Untagged
+  m_TagString: FloorTiles
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

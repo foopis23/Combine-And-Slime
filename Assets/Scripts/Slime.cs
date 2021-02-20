@@ -2,6 +2,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using CallbackEvents;
+
+public class SlimeStartMovingContext : EventContext {
+    public Slime Slime;
+
+    public SlimeStartMovingContext(Slime Slime) {
+        this.Slime = Slime;
+    }
+}
+
+public class SlimeFinishMovingContext : EventContext {
+    public Slime Slime;
+
+    public SlimeFinishMovingContext(Slime Slime) {
+        this.Slime = Slime;
+    }
+}
 
 public class CannotMergeException : Exception
 {
@@ -82,6 +99,8 @@ public class Slime : MonoBehaviour
             transform.position = Vector3.MoveTowards(transform.position, destination, MoveSpeed * Time.deltaTime);
 
             atDestination = dist < StoppingDistance;
+
+            if (atDestination) FinishedMove();
         }
     }
 
@@ -124,9 +143,14 @@ public class Slime : MonoBehaviour
 
     public void Move(Vector3Int tileLocation)
     {
+        EventSystem.Current.FireEvent(new SlimeStartMovingContext(this));
         SetDestination(tilemap.CellToWorld(tileLocation));
         TileLocation = tileLocation;
         UpdateTiles();
+    }
+
+    private void FinishedMove() {
+        EventSystem.Current.FireEvent(new SlimeFinishMovingContext(this));
     }
 
     public void MoveInstant(Vector3Int tileLocation)
