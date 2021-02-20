@@ -2,6 +2,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using CallbackEvents;
+
+public class ActivateButtonContext : EventContext {
+    public TileBase ButtonType;
+
+    public ActivateButtonContext(TileBase ButtonType) {
+        this.ButtonType = ButtonType;
+    }
+}
+
+public class DeactivateButtonContext : EventContext {
+    public TileBase ButtonType;
+
+    public DeactivateButtonContext(TileBase ButtonType) {
+        this.ButtonType = ButtonType;
+    }
+}
 
 public class SlimeController : MonoBehaviour
 {
@@ -11,6 +28,7 @@ public class SlimeController : MonoBehaviour
     [SerializeField] private Tilemap cursorOverlay;
     [SerializeField] private TileBase possibleMoveTile;
     [SerializeField] private TileBase validMoveTile;
+    [SerializeField] private Tilemap buttonMap;
     [SerializeField] private Tilemap tilemap;
     [SerializeField] private GameObject slimePrefab;
 
@@ -62,14 +80,15 @@ public class SlimeController : MonoBehaviour
     private void AddSlime(GameObject slime)
     {
         Vector3Int gridPos = tilemap.WorldToCell(new Vector3(slime.transform.position.x, slime.transform.position.y, 0));
-        Debug.Log($"Add: {gridPos}");
         slimes.Add(gridPos, slime);
+
+        //activate button if this slime is standing on one
+        SetButtonActive(gridPos, true);
     }
 
     private GameObject GetSlime(Vector3 worldPos)
     {
         Vector3Int gridPos = tilemap.WorldToCell(new Vector3(worldPos.x, worldPos.y, 0));
-        Debug.Log($"Get: {gridPos}");
         if (!slimes.ContainsKey(gridPos)) return null;
 
         return slimes[gridPos];
@@ -78,8 +97,16 @@ public class SlimeController : MonoBehaviour
     private bool RemoveSlime(Vector3 worldPos)
     {
         Vector3Int gridPos = tilemap.WorldToCell(new Vector3(worldPos.x, worldPos.y, 0));
-        Debug.Log($"Add: {gridPos}");
-        return slimes.Remove(gridPos);
+
+        bool res = slimes.Remove(gridPos);
+
+
+        if (res) {
+            //deactivate button if this slime is standing on one
+            SetButtonActive(gridPos, false);
+        }
+
+        return res;
     }
 
     private Vector3 roundToGrid(Vector3 pos)
@@ -139,7 +166,7 @@ public class SlimeController : MonoBehaviour
 
             Vector3Int perpendicular = direction.x == 0 ? directions[0] : directions[2];
             HashSet<Vector3Int> possibleValidTiles;
-            bool piss = false;
+            bool piss = false; //? Now if this isn't me when I am pissing I don't know what is
             bool valid;
             do
             {
@@ -236,6 +263,22 @@ public class SlimeController : MonoBehaviour
         }
     }
 
+    private void SetButtonActive(Vector3Int slimeTilePos, bool isActive) {
+        if (buttonMap.HasTile(slimeTilePos)) {
+            TileBase tile = buttonMap.GetTile(slimeTilePos);
+            if (isActive) {
+                EventSystem.Current.FireEvent(new ActivateButtonContext(tile));
+            }else{
+                EventSystem.Current.FireEvent(new DeactivateButtonContext(tile));
+            }
+        }
+    }
+
+    private void SetButtonActive(Vector3 slimePos, bool isActive) {
+        Vector3Int slimeTilePos = buttonMap.WorldToCell(new Vector3(slimePos.x, slimePos.y, 0));
+        SetButtonActive(slimeTilePos, isActive);
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -246,9 +289,10 @@ public class SlimeController : MonoBehaviour
 
         if(!currentSlime.IsMoving)
         {
-            if(getMoves)
-            {
+            // this is just run every time the slime reaches its dest
+            if(getMoves) {
                 GetValidMoves();
+                SetButtonActive(currentSlime.transform.position, true);
                 getMoves = false;
             }
 
@@ -284,14 +328,23 @@ public class SlimeController : MonoBehaviour
                     if(performSplit)
                     {
                         // split the slime to the selected location
+
+                        //deactivate button slime was on
+                        SetButtonActive(currentSlime.transform.position, false);
+
                         int newScale = currentSlime.Scale - 1;
                         currentSlime.SetScale(newScale);
                         currentSlimeObject.transform.position = tilemap.CellToWorld(splitTilePositions[mouseOverTileLocation]);
                         AddSlime(currentSlimeObject);
+
+
                         currentSlimeObject = Instantiate(slimePrefab, currentSlimeObject.transform.position, Quaternion.Euler(0, 0, 0));
                         currentSlime = currentSlimeObject.GetComponent<Slime>();
                         currentSlime.SetScale(newScale);
                         performSplit = false;
+
+                        //activate button active slime is one
+                        SetButtonActive(currentSlime.transform.position, true);
 
                         // move the slime to the split location
                         currentSlimeTileLocation = mouseOverTilePositions[mouseOverTileLocation];
@@ -299,6 +352,9 @@ public class SlimeController : MonoBehaviour
                     }
                     else
                     {
+                        //deactivate button slime was on
+                        SetButtonActive(currentSlime.transform.position, false);
+
                         // move slime to the selected location
                         MoveSelectedSlime(tilemap.CellToWorld(mouseOverTilePositions[mouseOverTileLocation]));
                     }
