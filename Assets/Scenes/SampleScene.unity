@@ -442,11 +442,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6417080166661863116, guid: 2417512f1734b754cb298486e4e0c9d7, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6417080166661863116, guid: 2417512f1734b754cb298486e4e0c9d7, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -3
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 6417080166661863116, guid: 2417512f1734b754cb298486e4e0c9d7, type: 3}
       propertyPath: m_LocalPosition.z
@@ -494,7 +494,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6616535746810711711, guid: 2417512f1734b754cb298486e4e0c9d7, type: 3}
       propertyPath: StartingScale
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2417512f1734b754cb298486e4e0c9d7, type: 3}
@@ -511,15 +511,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 549190182, guid: 2417512f1734b754cb298486e4e0c9d7, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.38
       objectReference: {fileID: 0}
     - target: {fileID: 6417080166661863116, guid: 2417512f1734b754cb298486e4e0c9d7, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -3.5
+      value: -3
       objectReference: {fileID: 0}
     - target: {fileID: 6417080166661863116, guid: 2417512f1734b754cb298486e4e0c9d7, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.87
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 6417080166661863116, guid: 2417512f1734b754cb298486e4e0c9d7, type: 3}
       propertyPath: m_LocalPosition.z
@@ -785,6 +785,19 @@ MonoBehaviour:
   movementOverlay: {fileID: 1830732974}
   cursorOverlay: {fileID: 1614461042}
   startingSlime: {fileID: 975078359}
+  placedSlimes:
+  - {fileID: 1469997160}
+--- !u!114 &1469997160 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6616535746810711711, guid: 2417512f1734b754cb298486e4e0c9d7, type: 3}
+  m_PrefabInstance: {fileID: 337813938}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1252618ab0a534e44b24d0e302934d1b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1587307301
 GameObject:
   m_ObjectHideFlags: 0
@@ -2473,7 +2486,7 @@ Tilemap:
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
       m_AllTileFlags: 1073741825
-  - first: {x: -6, y: 1, z: 0}
+  - first: {x: -5, y: 1, z: 0}
     second:
       serializedVersion: 2
       m_TileIndex: 1

@@ -32,6 +32,7 @@ public class SlimeController : MonoBehaviour
     [SerializeField] private Tilemap movementOverlay;
     [SerializeField] private Tilemap cursorOverlay;
     [SerializeField] private Slime startingSlime;
+    [SerializeField] private Slime[] placedSlimes;
 
     //internal properties
     private Camera mainCamera;
@@ -57,6 +58,11 @@ public class SlimeController : MonoBehaviour
         mergeTarget = null;
         getMoves = true;
         performSplit = false;
+
+        foreach(Slime slime in placedSlimes)
+        {
+            AddSlime(slime);
+        }
     }
 
     private void AddSlime(Slime slime)
@@ -258,6 +264,15 @@ public class SlimeController : MonoBehaviour
         {
             movementOverlay.SetTile(tilePos, performSplit ? possibleSplitTile : possibleMoveTile);
         }
+
+        foreach(Vector3Int tilePos in currentSlime.OccupiedTiles)
+        {
+            moveLocationFromMouseTileLocation.Remove(tilePos);
+            if(currentSlime.CanSplit() && !performSplit)
+            {
+                movementOverlay.SetTile(tilePos, possibleSplitTile);
+            }
+        }
     }
 
     private void MoveCurrentSlime(Vector3Int tileLocation)
@@ -301,15 +316,14 @@ public class SlimeController : MonoBehaviour
         Vector3 mouseWorldPos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
         Vector3Int mouseTileLocation = tilemap.WorldToCell(new Vector3(mouseWorldPos.x, mouseWorldPos.y, 0));
 
-        bool isValidSelectionTile = movementOverlay.HasTile(mouseTileLocation);
+        bool isValidSelectionTile = moveLocationFromMouseTileLocation.ContainsKey(mouseTileLocation);
 
         if(!currentSlime.IsMoving)
         {
             if (mergeTarget != null && !currentSlime.IsMoving)
             {
-                currentSlime.MoveInstant(mergeLocationFromTargetLocation[mergeTarget.TileLocation]);
                 RemoveSlime(mergeTarget);
-                currentSlime.MergeWith(mergeTarget);
+                currentSlime.MergeWith(mergeTarget, mergeLocationFromTargetLocation[mergeTarget.TileLocation]);
                 mergeTarget = null;
                 getMoves = true;
             }

@@ -114,11 +114,12 @@ public class Slime : MonoBehaviour
         return newSlime;
     }
 
-    public void MergeWith(Slime other)
+    public void MergeWith(Slime other, Vector3Int mergeLocation)
     {
         if(!CanMergeWith(other)) throw new CannotMergeException();
 
         SetScale(scale + 1);
+        MoveInstant(mergeLocation);
         Destroy(other.gameObject);
     }
 
