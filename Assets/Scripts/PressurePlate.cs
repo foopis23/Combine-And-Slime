@@ -108,7 +108,6 @@ public class PressurePlate : MonoBehaviour
 
     void OnSlimeMerge(SlimeMergeContext ctx) {
         if (ObjectPressingButton != null && (ObjectPressingButton.Equals(ctx.Assimilated.gameObject) || ObjectPressingButton.Equals(ctx.Slime.gameObject))) {
-            Debug.Log("IS HAPPENING");
             ObjectPressingButton = null;
             isTriggered = false;
             EventSystem.Current.FireEvent(new DeactivateButtonContext(buttonType));
