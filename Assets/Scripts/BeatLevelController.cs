@@ -63,10 +63,21 @@ public class BeatLevelController : MonoBehaviour
 
     private int CalcScore(int moves, int merges, int splits)
     {
-        //TODO: MAKE SCORE CALC FORMULA
+        //TODO: I don't scores are kind of weird still. I think it should be more of a par system to make the scores make more sense
+        float highestScore = 9999.0f;
+        float highestActionCount = 999.0f;
 
+        float moveRawScore = highestActionCount - moves;
+        float mergeRawScore = highestActionCount - merges;
+        float splitRawScore = highestActionCount - splits;
 
-        return moves + merges + splits;
+        float weight = (1.0f/3.0f);
+
+        float moveScore = (moveRawScore/highestActionCount) * highestScore * weight;
+        float mergeScore = (mergeRawScore/highestActionCount) * highestScore * weight;
+        float splitsScore = (splitRawScore/highestActionCount) * highestScore * weight;
+
+        return (int) (moveScore + mergeScore + splitsScore);
     }
 
     private void SaveLevelStats(int moves, int merges, int splits, int score)
@@ -88,7 +99,7 @@ public class BeatLevelController : MonoBehaviour
         movesCount.text = DisplayScore(ctx.moves, 3);
         mergeCount.text = DisplayScore(ctx.merges, 3);
         splitCount.text = DisplayScore(ctx.splits, 3);
-        scoreText.text = DisplayScore(score, 6);
+        scoreText.text = DisplayScore(score, 5);
 
         // Display Level Complete Panel
         levelCompletelPanel.SetActive(true);

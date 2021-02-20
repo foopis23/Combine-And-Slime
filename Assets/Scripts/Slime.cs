@@ -89,7 +89,7 @@ public class Slime : MonoBehaviour
     public Vector3Int TileLocation { get; private set; }
     public HashSet<Vector3Int> OccupiedTiles { get; private set; }
 
-    void Init()
+    public void Init()
     {
         if(!initialized)
         {

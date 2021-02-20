@@ -55,8 +55,6 @@ public class PressurePlate : MonoBehaviour
         Vector3Int pos = groundMap.WorldToCell(transform.position);
         gridLocation = new Vector3Int(pos.x, pos.y, 0);
         transform.position = groundMap.CellToWorld(pos);
-
-        EventSystem.Current.RegisterEventListener<SlimeStartMovingContext>(OnSlimeStartMoving);
         EventSystem.Current.RegisterEventListener<SlimeFinishMovingContext>(OnSlimeFinishedMoving);
         EventSystem.Current.RegisterEventListener<SlimeSplitContext>(OnSlimeSplit);
         EventSystem.Current.RegisterEventListener<SlimeMergeContext>(OnSlimeMerge);
@@ -78,9 +76,16 @@ public class PressurePlate : MonoBehaviour
         return true;
     }
 
-    void OnSlimeStartMoving(SlimeStartMovingContext ctx)
-    {
+    private void activateButton(GameObject buttonPressor) {
+        ObjectPressingButton = buttonPressor;
+        isTriggered = true;
+        EventSystem.Current.FireEvent(new ActivateButtonContext(buttonType));
+    }
 
+    private void deactivateButton() {
+        ObjectPressingButton = null;
+        isTriggered = false;
+        EventSystem.Current.FireEvent(new DeactivateButtonContext(buttonType));
     }
 
     void OnSlimeFinishedMoving(SlimeFinishMovingContext ctx)
@@ -89,28 +94,21 @@ public class PressurePlate : MonoBehaviour
         
         if (!isTriggered && buttonPressed)
         {
-            ObjectPressingButton = ctx.Slime.gameObject;
-            isTriggered = true;
-            EventSystem.Current.FireEvent(new ActivateButtonContext(buttonType));
+            activateButton(ctx.Slime.gameObject);
         }else if (isTriggered && ObjectPressingButton.Equals(ctx.Slime.gameObject) && !buttonPressed) {
-            isTriggered = false;
-            EventSystem.Current.FireEvent(new DeactivateButtonContext(buttonType));
+            deactivateButton();
         }
     }
 
     void OnSlimeSplit(SlimeSplitContext ctx) {
         if (ObjectPressingButton != null && (ObjectPressingButton.Equals(ctx.NewSlime.gameObject) || ObjectPressingButton.Equals(ctx.OldSlime.gameObject))) {
-            ObjectPressingButton = null;
-            isTriggered = false;
-            EventSystem.Current.FireEvent(new DeactivateButtonContext(buttonType));
+            deactivateButton();
         }
     }
 
     void OnSlimeMerge(SlimeMergeContext ctx) {
         if (ObjectPressingButton != null && (ObjectPressingButton.Equals(ctx.Assimilated.gameObject) || ObjectPressingButton.Equals(ctx.Slime.gameObject))) {
-            ObjectPressingButton = null;
-            isTriggered = false;
-            EventSystem.Current.FireEvent(new DeactivateButtonContext(buttonType));
+            deactivateButton();
         }
     }
 }

@@ -46,12 +46,12 @@ TagManager:
   - name: Ground
     uniqueID: 3869490625
     locked: 0
-  - name: Overlay
+  - name: Buttons
     uniqueID: 1196937783
     locked: 0
-  - name: Shadow
+  - name: Overlay
     uniqueID: 3914379619
     locked: 0
-  - name: Slime
+  - name: Foreground
     uniqueID: 293390581
     locked: 0

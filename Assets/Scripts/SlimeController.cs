@@ -52,6 +52,7 @@ public class SlimeController : MonoBehaviour
 
         foreach(Slime slime in placedSlimes)
         {
+            slime.Init();
             AddSlime(slime);
         }
     }
