@@ -17,9 +17,8 @@ public class SlimeController : MonoBehaviour
     [SerializeField] private Slime startingSlime;
     [SerializeField] private Slime[] placedSlimes;
 
-    //internal properties
+    //internal
     private Camera mainCamera;
-    private Slime currentSlime;
     private Slime mergeTarget;
     private HashSet<Slime> allSlimes;
     private Dictionary<Vector3Int, Vector3Int> moveLocationFromMouseTileLocation;
@@ -29,9 +28,12 @@ public class SlimeController : MonoBehaviour
     private bool getMoves;
     private bool performSplit;
 
+    //properties
+    public Slime CurrentSlime { get; private set; }
+
     void Start()
     {
-        currentSlime = startingSlime;
+        CurrentSlime = startingSlime;
         allSlimes = new HashSet<Slime>();
         moveLocationFromMouseTileLocation = new Dictionary<Vector3Int, Vector3Int>();
         splitLocationFromMouseTileLocation = new Dictionary<Vector3Int, Vector3Int>();
@@ -79,10 +81,10 @@ public class SlimeController : MonoBehaviour
 
     private Vector3Int GetMergeOffset(Slime slime)
     {
-        if(!currentSlime.CanMergeWith(slime)) throw new CannotMergeException();
+        if(!CurrentSlime.CanMergeWith(slime)) throw new CannotMergeException();
 
         List<Vector3Int> mergeOffsets = new List<Vector3Int>();
-        int width = currentSlime.Scale + 2;
+        int width = CurrentSlime.Scale + 2;
         for(int x = 0; x < width; x++)
         {
             for(int y = 0; y < width; y++)
@@ -122,7 +124,7 @@ public class SlimeController : MonoBehaviour
         moveLocationFromMouseTileLocation.Clear();
         splitLocationFromMouseTileLocation.Clear();
         mergeLocationFromTargetLocation.Clear();
-        int width = currentSlime.Scale + 1;
+        int width = CurrentSlime.Scale + 1;
 
         Vector3Int testPos;
         Vector3Int splitPos = Vector3Int.zero;
@@ -142,12 +144,12 @@ public class SlimeController : MonoBehaviour
 
             if(performSplit)
             {
-                testPos = currentSlime.TileLocation + direction * (direction.x > 0 || direction.y > 0 ? width : width - 1);
-                splitPos = currentSlime.TileLocation + direction * (direction.x > 0 || direction.y > 0 ? 1 : 0);
+                testPos = CurrentSlime.TileLocation + direction * (direction.x > 0 || direction.y > 0 ? width : width - 1);
+                splitPos = CurrentSlime.TileLocation + direction * (direction.x > 0 || direction.y > 0 ? 1 : 0);
             }
             else
             {
-                testPos = new Vector3Int(currentSlime.TileLocation.x, currentSlime.TileLocation.y, currentSlime.TileLocation.z);
+                testPos = new Vector3Int(CurrentSlime.TileLocation.x, CurrentSlime.TileLocation.y, CurrentSlime.TileLocation.z);
             }
 
             Vector3Int perpendicular = direction.x == 0 ? directions[0] : directions[2];
@@ -179,7 +181,7 @@ public class SlimeController : MonoBehaviour
                     }
                 }
 
-                possibleValidTiles.ExceptWith(currentSlime.OccupiedTiles);
+                possibleValidTiles.ExceptWith(CurrentSlime.OccupiedTiles);
 
                 if(valid)
                 {
@@ -214,11 +216,11 @@ public class SlimeController : MonoBehaviour
 
         for(int i = 0; i < 4; i++)
         {
-            Vector3Int testMergePos = finalPositions[i] + directions[i] * currentSlime.Scale;
+            Vector3Int testMergePos = finalPositions[i] + directions[i] * CurrentSlime.Scale;
             if(slimeFromTileLocation.ContainsKey(testMergePos))
             {
                 Slime testMergeSlime = slimeFromTileLocation[testMergePos];
-                if(testMergeSlime.TileLocation == testMergePos && testMergeSlime.Scale == currentSlime.Scale)
+                if(testMergeSlime.TileLocation == testMergePos && testMergeSlime.Scale == CurrentSlime.Scale)
                 {
                     try
                     {
@@ -248,10 +250,10 @@ public class SlimeController : MonoBehaviour
             movementOverlay.SetTile(tilePos, performSplit ? possibleSplitTile : possibleMoveTile);
         }
 
-        foreach(Vector3Int tilePos in currentSlime.OccupiedTiles)
+        foreach(Vector3Int tilePos in CurrentSlime.OccupiedTiles)
         {
             moveLocationFromMouseTileLocation.Remove(tilePos);
-            if(currentSlime.CanSplit() && !performSplit)
+            if(CurrentSlime.CanSplit() && !performSplit)
             {
                 movementOverlay.SetTile(tilePos, possibleSplitTile);
             }
@@ -268,7 +270,7 @@ public class SlimeController : MonoBehaviour
             mergeTarget = slimeFromTileLocation[tileLocation];
         }
 
-        currentSlime.Move(tileLocation);
+        CurrentSlime.Move(tileLocation);
     }
 
     // Update is called once per frame
@@ -279,12 +281,12 @@ public class SlimeController : MonoBehaviour
 
         bool isValidSelectionTile = moveLocationFromMouseTileLocation.ContainsKey(mouseTileLocation);
 
-        if(!currentSlime.IsMoving)
+        if(!CurrentSlime.IsMoving)
         {
-            if (mergeTarget != null && !currentSlime.IsMoving)
+            if (mergeTarget != null && !CurrentSlime.IsMoving)
             {
                 RemoveSlime(mergeTarget);
-                currentSlime.MergeWith(mergeTarget, mergeLocationFromTargetLocation[mergeTarget.TileLocation]);
+                CurrentSlime.MergeWith(mergeTarget, mergeLocationFromTargetLocation[mergeTarget.TileLocation]);
                 mergeTarget = null;
                 getMoves = true;
             }
@@ -300,7 +302,7 @@ public class SlimeController : MonoBehaviour
             if (isValidSelectionTile && moveLocationFromMouseTileLocation.ContainsKey(mouseTileLocation))
             {
                 Vector3Int moveTilePos = moveLocationFromMouseTileLocation[mouseTileLocation];
-                int highlightSize = performSplit ? currentSlime.Scale : currentSlime.Scale + 1;
+                int highlightSize = performSplit ? CurrentSlime.Scale : CurrentSlime.Scale + 1;
                 if(mergeLocationFromTargetLocation.ContainsKey(moveTilePos))
                 {
                     moveTilePos = mergeLocationFromTargetLocation[moveTilePos];
@@ -323,8 +325,8 @@ public class SlimeController : MonoBehaviour
                     if(performSplit)
                     {
                         // split the slime to the selected location
-                        Slime splitSlime = currentSlime;
-                        currentSlime = currentSlime.Split(moveLocationFromMouseTileLocation[mouseTileLocation]);
+                        Slime splitSlime = CurrentSlime;
+                        CurrentSlime = CurrentSlime.Split(moveLocationFromMouseTileLocation[mouseTileLocation]);
                         AddSlime(splitSlime);
                         performSplit = false;
                     }
@@ -336,7 +338,7 @@ public class SlimeController : MonoBehaviour
 
                     getMoves = true;
                 }
-                else if(currentSlime.OccupiedTiles.Contains(mouseTileLocation) && currentSlime.CanSplit())
+                else if(CurrentSlime.OccupiedTiles.Contains(mouseTileLocation) && CurrentSlime.CanSplit())
                 {
                     // initiate split
                     performSplit = true;

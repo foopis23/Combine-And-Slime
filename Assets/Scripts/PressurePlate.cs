@@ -56,16 +56,16 @@ public class PressurePlate : MonoBehaviour
         gridLocation = new Vector3Int(pos.x, pos.y, 0);
     }
 
-    void OnSlimeStartMoving(SlimeStartMovingContext ctx)
+    void OnSlimeStartMoving(ObjectStartMovingContext ctx)
     {
-        if (isTriggered && ctx.Slime.OccupiedTiles.Contains(new Vector3Int(gridLocation.x, gridLocation.y, ctx.Slime.TileLocation.z)))
+        if (isTriggered && ctx.obj.OccupiedTiles.Contains(new Vector3Int(gridLocation.x, gridLocation.y, ctx.obj.TileLocation.z)))
         {
             isTriggered = false;
             EventSystem.Current.FireEvent(new DeactivateButtonContext(buttonType));
         }
     }
 
-    void OnSlimeFinishedMoving(SlimeFinishMovingContext ctx)
+    void OnSlimeFinishedMoving(ObjectFinishMovingContext ctx)
     {
         Debug.Log("PISS BABY");
         
@@ -75,7 +75,7 @@ public class PressurePlate : MonoBehaviour
             {
                 for (int x = 0; x < size; x++)
                 {
-                    if (!ctx.Slime.OccupiedTiles.Contains(new Vector3Int(gridLocation.x + x, gridLocation.y + y, ctx.Slime.TileLocation.z)))
+                    if (!ctx.obj.OccupiedTiles.Contains(new Vector3Int(gridLocation.x + x, gridLocation.y + y, ctx.obj.TileLocation.z)))
                     {
                         return;
                     }
