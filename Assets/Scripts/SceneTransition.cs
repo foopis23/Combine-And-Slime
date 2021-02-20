@@ -31,6 +31,7 @@ public class SceneTransition : MonoBehaviour
 
     // called at the end of the "FadeIn" animation
     void OnFadeIn() {
+        GameState.PAUSED = false;
         panel.SetActive(false);
     }
 

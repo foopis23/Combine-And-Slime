@@ -91,6 +91,8 @@ public class BeatLevelController : MonoBehaviour
 
     public void OnLevelBeat(LevelBeatContext ctx)
     {
+        GameState.PAUSED = true;
+        
         // calc score and save level stats
         int score = CalcScore(ctx.moves, ctx.merges, ctx.splits);
         SaveLevelStats(ctx.moves, ctx.merges, ctx.splits, score);

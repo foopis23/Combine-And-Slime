@@ -1512,7 +1512,7 @@ Transform:
   m_GameObject: {fileID: 1843962829}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.5, y: -1.25, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2, y: 2, z: 1}
   m_Children:
   - {fileID: 204288710}
   m_Father: {fileID: 1054812229}
@@ -2763,6 +2763,10 @@ PrefabInstance:
       propertyPath: groundMap
       value: 
       objectReference: {fileID: 1978646950}
+    - target: {fileID: 2697519499551598530, guid: eabf82737da61684bb87e1cc8ef832c4, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2697519499840980387, guid: eabf82737da61684bb87e1cc8ef832c4, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -2810,10 +2814,6 @@ PrefabInstance:
     - target: {fileID: 2697519499840980397, guid: eabf82737da61684bb87e1cc8ef832c4, type: 3}
       propertyPath: m_Name
       value: Game Manager
-      objectReference: {fileID: 0}
-    - target: {fileID: 2697519500099956179, guid: eabf82737da61684bb87e1cc8ef832c4, type: 3}
-      propertyPath: placedSlimes.Array.size
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2697519500099956179, guid: eabf82737da61684bb87e1cc8ef832c4, type: 3}
       propertyPath: tilemap
