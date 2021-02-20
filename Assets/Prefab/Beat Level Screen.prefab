@@ -2168,6 +2168,7 @@ MonoBehaviour:
   mergeCount: {fileID: 1747179902003905909}
   splitCount: {fileID: 1747179901860026534}
   scoreText: {fileID: 1747179902365066206}
+  nextButton: {fileID: 1747179902497858084}
 --- !u!1 &1747179902977712527
 GameObject:
   m_ObjectHideFlags: 0
