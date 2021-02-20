@@ -29,10 +29,10 @@ public class Slime : MonoBehaviour
     [SerializeField] private int StartingScale = 0;
     [SerializeField] private float MoveSpeed = 10.0f;
     [SerializeField] private float StoppingDistance = 0.001f;
-    [SerializeField] private Tilemap Tilemap;
     [SerializeField] private GameObject SlimePrefab;
 
     // internal
+    private Tilemap tilemap;
     private int scale = -1;
     private Vector3 destination;
     private bool atDestination = true;
@@ -56,7 +56,8 @@ public class Slime : MonoBehaviour
     {
         if(!initialized)
         {
-            TileLocation = Tilemap.WorldToCell(transform.position);
+            tilemap = GameObject.FindGameObjectWithTag("FloorTiles").GetComponent<Tilemap>();
+            TileLocation = tilemap.WorldToCell(transform.position);
             OccupiedTiles = new HashSet<Vector3Int>();
             if (scale == -1) scale = StartingScale;
             transform.localScale = SLIME_SCALES[scale];
@@ -113,25 +114,24 @@ public class Slime : MonoBehaviour
         return newSlime;
     }
 
-    public void MergeWith(Slime other, Vector3Int mergeLocation)
+    public void MergeWith(Slime other)
     {
         if(!CanMergeWith(other)) throw new CannotMergeException();
 
         SetScale(scale + 1);
-        MoveInstant(mergeLocation);
-        Destroy(other);
+        Destroy(other.gameObject);
     }
 
     public void Move(Vector3Int tileLocation)
     {
-        SetDestination(Tilemap.CellToWorld(tileLocation));
+        SetDestination(tilemap.CellToWorld(tileLocation));
         TileLocation = tileLocation;
         UpdateTiles();
     }
 
     public void MoveInstant(Vector3Int tileLocation)
     {
-        transform.position = Tilemap.CellToWorld(tileLocation);
+        transform.position = tilemap.CellToWorld(tileLocation);
         TileLocation = tileLocation;
         UpdateTiles();
     }

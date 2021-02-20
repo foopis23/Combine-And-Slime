@@ -153,7 +153,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1252618ab0a534e44b24d0e302934d1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startingScale: 0
+  StartingScale: 0
   MoveSpeed: 10
   StoppingDistance: 0.001
-  SlimeLayer: 0
+  Tilemap: {fileID: 0}
+  SlimePrefab: {fileID: 6417080166661863118}
