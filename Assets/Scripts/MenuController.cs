@@ -46,4 +46,8 @@ public class MenuController : MonoBehaviour
         MainMenuAnimator.Play("SlideRightIn");
         LevelSelectAnimator.Play("SlideRightOut");
     }
+
+    public void OnQuitClicked() {
+        Application.Quit(0);
+    }
 }
