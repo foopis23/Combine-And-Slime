@@ -131,11 +131,8 @@ public class DoorController : MonoBehaviour
 
     public void OnActivateButton(ActivateButtonContext ctx)
     {
-        Debug.Log("REACHED BUT NOT WORKING");
         if (ctx.ButtonType == null) return;
         if (!DoorLookUp.ContainsKey(ctx.ButtonType)) return;
-
-        Debug.Log("EXISTS BUT NOT WORKING");
 
         DoorLookUp[buttonType].Activate(doorMap, groundMap);
     }
