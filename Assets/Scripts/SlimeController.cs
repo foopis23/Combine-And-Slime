@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using CallbackEvents;
@@ -20,6 +19,7 @@ public class DeactivateButtonContext : EventContext {
     }
 }
 
+
 public class SlimeController : MonoBehaviour
 {
     //editor properties
@@ -30,6 +30,7 @@ public class SlimeController : MonoBehaviour
     [SerializeField] private TileBase validMoveTile;
     [SerializeField] private Tilemap buttonMap;
     [SerializeField] private Tilemap tilemap;
+    [SerializeField] private Slime startingSlime;
     [SerializeField] private GameObject slimePrefab;
 
     //internal properties
@@ -37,9 +38,11 @@ public class SlimeController : MonoBehaviour
     private Slime currentSlime;
     private GameObject currentSlimeObject;
     private Vector3Int currentSlimeTileLocation;
-    private HashSet<Vector3Int> slimeTiles;
+    private HashSet<Vector3Int> currentSlimeTiles;
     private GameObject mergeWith;
-    private Dictionary<Vector3Int, GameObject> slimes;
+    private Dictionary<Vector3Int, GameObject> otherSlimes;
+    private Dictionary<GameObject, Vector3Int> otherSlimeTileLocations;
+    private HashSet<Vector3Int> otherSlimeTiles;
     private Dictionary<Vector3Int, Vector3Int> mouseOverTilePositions;
     private Dictionary<Vector3Int, Vector3Int> splitTilePositions;
     private bool getMoves;
@@ -47,19 +50,12 @@ public class SlimeController : MonoBehaviour
 
     void Start()
     {
-        slimes = new Dictionary<Vector3Int, GameObject>();
+        currentSlime = startingSlime;
+        otherSlimes = new Dictionary<Vector3Int, GameObject>();
         mainCamera = Camera.main;
         mergeWith = null;
         getMoves = true;
         performSplit = false;
-
-        if (currentSlime == null)
-        {
-            currentSlimeObject = GameObject.FindGameObjectWithTag("slime");
-            currentSlime = currentSlimeObject?.GetComponent<Slime>();
-            currentSlimeTileLocation = tilemap.WorldToCell(new Vector3(currentSlimeObject.transform.position.x, currentSlimeObject.transform.position.y, 0));
-            GetValidMoves();
-        }
     }
 
     private GameObject SelectSlime(Vector3 mouseWorldPos)
@@ -80,7 +76,19 @@ public class SlimeController : MonoBehaviour
     private void AddSlime(GameObject slime)
     {
         Vector3Int gridPos = tilemap.WorldToCell(new Vector3(slime.transform.position.x, slime.transform.position.y, 0));
-        slimes.Add(gridPos, slime);
+        otherSlimes.Add(gridPos, slime);
+        otherSlimeTileLocations.Add(slime, gridPos);
+        HashSet<Vector3Int> slimeTiles = new HashSet<Vector3Int>();
+        int width = slime.GetComponent<Slime>().Scale + 1;
+        for(int h = 0; h < width; h++)
+        {
+            for(int k = 0; k < width; k++)
+            {
+                slimeTiles.Add(new Vector3Int(gridPos.x + h, gridPos.y + k, gridPos.z));
+            }
+        }
+
+        otherSlimeTiles.UnionWith(slimeTiles);
 
         //activate button if this slime is standing on one
         SetButtonActive(gridPos, true);
@@ -89,17 +97,22 @@ public class SlimeController : MonoBehaviour
     private GameObject GetSlime(Vector3 worldPos)
     {
         Vector3Int gridPos = tilemap.WorldToCell(new Vector3(worldPos.x, worldPos.y, 0));
-        if (!slimes.ContainsKey(gridPos)) return null;
+        if (!otherSlimes.ContainsKey(gridPos)) return null;
 
-        return slimes[gridPos];
+        return otherSlimes[gridPos];
     }
 
     private bool RemoveSlime(Vector3 worldPos)
     {
         Vector3Int gridPos = tilemap.WorldToCell(new Vector3(worldPos.x, worldPos.y, 0));
 
-        bool res = slimes.Remove(gridPos);
+        if(otherSlimes.ContainsKey(gridPos))
+        {
+            otherSlimeTileLocations.Remove(otherSlimes[gridPos]);
+            otherSlimeTiles.ExceptWith(otherSlimes[gridPos]);
+        }
 
+        bool res = otherSlimes.Remove(gridPos);
 
         if (res) {
             //deactivate button if this slime is standing on one
@@ -116,10 +129,46 @@ public class SlimeController : MonoBehaviour
         return gridWorldPos;
     }
 
-    private void PlaceSlime(Vector3 mouseWorldPos, GameObject slime)
+    private Vector3Int GetMergeOffset(Slime slime)
     {
-        Vector3 gridWorldPos = roundToGrid(mouseWorldPos);
-        slime.transform.position = new Vector2(gridWorldPos.x, gridWorldPos.y);
+        if(!currentSlime.CanMergeWith(slime))
+        {
+            throw new CannotMergeException();
+        }
+
+        List<Vector3Int> mergeOffsets = new List<Vector3Int>();
+        int width = currentSlime.Scale + 2;
+        for(int x = 0; x < width; x++)
+        {
+            for(int y = 0; y < width; y++)
+            {
+                mergeOffsets.Add(new Vector3Int(x, y, 0));
+            }
+        }
+
+        mergeOffsets.Sort((a, b) => (a.x + a.y - b.x + b.y));
+        foreach(Vector3Int offset in mergeOffsets)
+        {
+            bool isValidMergePosition = true;
+            for(int h = 0; h < width; h++)
+            {
+                for(int k = 0; k < width; k++)
+                {
+                    if(!tilemap.HasTile(otherSlimeTileLocations[slime.gameObject] - offset + new Vector3Int(h, k, 0)))
+                    {
+                        isValidMergePosition = false;
+                        break;
+                    }
+                }
+            }
+
+            if(isValidMergePosition)
+            {
+                return -offset;
+            }
+        }
+
+        throw new CannotMergeException();
     }
 
     private void GetValidMoves()
@@ -136,12 +185,12 @@ public class SlimeController : MonoBehaviour
         HashSet<Vector3Int> validTiles = new HashSet<Vector3Int>();
 
         // get the tiles taken up by the slime
-        slimeTiles = new HashSet<Vector3Int>();
+        currentSlimeTiles = new HashSet<Vector3Int>();
         for(int h = 0; h < width; h++)
         {
             for(int k = 0; k < width; k++)
             {
-                slimeTiles.Add(new Vector3Int(currentSlimeTileLocation.x + h, currentSlimeTileLocation.y + k, currentSlimeTileLocation.z));
+                currentSlimeTiles.Add(new Vector3Int(currentSlimeTileLocation.x + h, currentSlimeTileLocation.y + k, currentSlimeTileLocation.z));
             }
         }
 
@@ -193,7 +242,7 @@ public class SlimeController : MonoBehaviour
                     }
                 }
 
-                possibleValidTiles.ExceptWith(slimeTiles);
+                possibleValidTiles.ExceptWith(currentSlimeTiles);
 
                 if(valid)
                 {
@@ -245,7 +294,7 @@ public class SlimeController : MonoBehaviour
         {
             Slime slime = temp.GetComponent<Slime>();
 
-            if (currentSlime.CanMerge() && slime.Scale == currentSlime.Scale)
+            if (IsMergePossible(slime))
             {
                 Vector3 pos = roundToGrid(worldPos);
                 currentSlime.SetDestination(new Vector3(pos.x, pos.y, currentSlimeObject.transform.position.z));
@@ -361,7 +410,7 @@ public class SlimeController : MonoBehaviour
 
                     getMoves = true;
                 }
-                else if(slimeTiles.Contains(mouseOverTileLocation) && currentSlime.Scale > 0)
+                else if(currentSlimeTiles.Contains(mouseOverTileLocation) && currentSlime.CanSplit())
                 {
                     // initiate split
                     performSplit = true;
