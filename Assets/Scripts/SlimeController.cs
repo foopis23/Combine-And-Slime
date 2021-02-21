@@ -37,11 +37,13 @@ public class SlimeController : MonoBehaviour
     [SerializeField] private Tilemap cursorOverlay;
     [SerializeField] private Slime startingSlime;
     [SerializeField] private Slime[] placedSlimes;
+    [SerializeField] private Box[] placedBoxes;
 
     //internal
     private Camera mainCamera;
     private Slime mergeTarget;
     private HashSet<Slime> allSlimes;
+    private HashSet<Box> allBoxes;
     private Dictionary<Vector3Int, Vector3Int> moveLocationFromMouseTileLocation;
     private Dictionary<Vector3Int, Vector3Int> splitLocationFromMouseTileLocation;
     private Dictionary<Vector3Int, Vector3Int> mergeLocationFromTargetLocation;
@@ -56,6 +58,7 @@ public class SlimeController : MonoBehaviour
     {
         CurrentSlime = startingSlime;
         allSlimes = new HashSet<Slime>();
+        allBoxes = new HashSet<Box>();
         moveLocationFromMouseTileLocation = new Dictionary<Vector3Int, Vector3Int>();
         splitLocationFromMouseTileLocation = new Dictionary<Vector3Int, Vector3Int>();
         mergeLocationFromTargetLocation = new Dictionary<Vector3Int, Vector3Int>();
@@ -73,6 +76,12 @@ public class SlimeController : MonoBehaviour
         {
             slime.Init();
             AddSlime(slime);
+        }
+
+        foreach(Box box in placedBoxes)
+        {
+            box.Init();
+            allBoxes.Add(box);
         }
     }
 
@@ -96,6 +105,19 @@ public class SlimeController : MonoBehaviour
         }
 
         return allSlimes.Remove(slime);
+    }
+
+    private Box GetBox(Vector3Int tilePos)
+    {
+        foreach(Box box in allBoxes)
+        {
+            if(box.OccupiedTiles.Contains(tilePos))
+            {
+                return box;
+            }
+        }
+
+        return null;
     }
 
     private Vector3 roundToGrid(Vector3 pos)
@@ -127,10 +149,21 @@ public class SlimeController : MonoBehaviour
             {
                 for(int k = 0; k < width; k++)
                 {
-                    if(!tilemap.HasTile(slime.TileLocation - offset + new Vector3Int(h, k, 0)))
+                    Vector3Int testPos = slime.TileLocation - offset + new Vector3Int(h, k, 0);
+                    if(!tilemap.HasTile(testPos) || GetBox(testPos) != null)
                     {
                         isValidMergeLocation = false;
                         break;
+                    }
+
+                    if(slimeFromTileLocation.ContainsKey(testPos))
+                    {
+                        Slime testSlime = slimeFromTileLocation[testPos];
+                        if(testSlime != slime && testSlime != CurrentSlime)
+                        {
+                            isValidMergeLocation = false;
+                            break;
+                        }
                     }
                 }
             }
@@ -156,6 +189,7 @@ public class SlimeController : MonoBehaviour
         Vector3Int splitPos = Vector3Int.zero;
         HashSet<Vector3Int> validTiles = new HashSet<Vector3Int>();
         Vector3Int[] finalPositions = new Vector3Int[4];
+        Dictionary<Box, Vector3Int> pushingBoxes = new Dictionary<Box, Vector3Int>();
 
         Vector3Int[] directions = {
             new Vector3Int( 1,  0, 0),
@@ -180,12 +214,27 @@ public class SlimeController : MonoBehaviour
 
             Vector3Int perpendicular = direction.x == 0 ? directions[0] : directions[2];
             HashSet<Vector3Int> possibleValidTiles;
+            pushingBoxes.Clear();
             bool piss = false; //? Now if this isn't me when I am pissing I don't know what is
             bool valid;
             do
             {
                 if(!performSplit)
                 {
+                    // check for boxes in the way
+                    for(int j = 0; j < width; j++)
+                    {
+                        Vector3Int boxTestPos = testPos + direction * (direction.x > 0 || direction.y > 0 ? width : 1) + perpendicular * j;
+                        Box box = GetBox(boxTestPos);
+                        if(box != null)
+                        {
+                            if(box.Scale <= CurrentSlime.Scale)
+                            {
+                                if(!pushingBoxes.ContainsKey(box)) pushingBoxes.Add(box, boxTestPos);
+                            }
+                        }
+                    }
+
                     testPos += direction;
                 }
 
@@ -199,9 +248,48 @@ public class SlimeController : MonoBehaviour
                     {
                         Vector3Int slimeTestPos = new Vector3Int(testPos.x + h, testPos.y + k, testPos.z);
                         possibleValidTiles.Add(slimeTestPos);
-                        if (!tilemap.HasTile(slimeTestPos) || slimeFromTileLocation.ContainsKey(slimeTestPos))
+                        Box testBox = GetBox(slimeTestPos);
+                        if (!tilemap.HasTile(slimeTestPos) || slimeFromTileLocation.ContainsKey(slimeTestPos) || (performSplit && testBox != null) || (testBox != null && !pushingBoxes.ContainsKey(testBox)))
                         {
                             valid = false;
+                            break;
+                        }
+                    }
+
+                    if(!valid)
+                    {
+                        break;
+                    }
+                }
+                
+                if(valid)
+                {
+                    Vector3Int boxPushPos = testPos + direction * (direction.x > 0 || direction.y > 0 ? width : 1);
+                    foreach(Box box in pushingBoxes.Keys)
+                    {
+                        Vector3Int boxOffset = (boxPushPos - pushingBoxes[box]);
+                        if(direction.x == 0)
+                        {
+                            boxOffset.x = 0;
+                        }
+                        else
+                        {
+                            boxOffset.y = 0;
+                        }
+                        Debug.Log(boxOffset);
+                        foreach(Vector3Int boxTilePos in box.OccupiedTiles)
+                        {
+                            Vector3Int boxTestPos = boxTilePos + boxOffset;
+                            Box otherBox = GetBox(boxTestPos);
+                            if (!tilemap.HasTile(boxTestPos) || slimeFromTileLocation.ContainsKey(boxTestPos) || (otherBox != null && otherBox != box))
+                            {
+                                valid = false;
+                                break;
+                            }
+                        }
+
+                        if(!valid)
+                        {
                             break;
                         }
                     }
