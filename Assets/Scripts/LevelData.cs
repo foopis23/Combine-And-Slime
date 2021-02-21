@@ -2,17 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LevelData : MonoBehaviour
+public static class LevelData
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public static int[] PAR_MOVES = new int[]{
+        0,
+        3,
+        4,
+        6,
+        9
+    };
 }

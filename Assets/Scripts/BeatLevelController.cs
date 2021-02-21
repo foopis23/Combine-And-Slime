@@ -25,6 +25,7 @@ public class BeatLevelController : MonoBehaviour
     [SerializeField] private TMP_Text movesCount;
     [SerializeField] private TMP_Text mergeCount;
     [SerializeField] private TMP_Text splitCount;
+    [SerializeField] private TMP_Text timeLabel;
     [SerializeField] private TMP_Text scoreText;
     [SerializeField] private Button nextButton;
     [SerializeField] private GameObject levelCompletelPanel;
@@ -64,47 +65,43 @@ public class BeatLevelController : MonoBehaviour
         return new string('0', Mathf.Max(digits - digitCount, 0)) + $"{score}";
     }
 
-    private int CalcScore(int moves, int merges, int splits)
+    private int CalcScore(int moves, int merges, int splits, float timeElapsed)
     {
-        //TODO: I don't scores are kind of weird still. I think it should be more of a par system to make the scores make more sense
-        float highestScore = 9999.0f;
-        float highestActionCount = 999.0f;
-
-        float moveRawScore = highestActionCount - moves;
-        float mergeRawScore = highestActionCount - merges;
-        float splitRawScore = highestActionCount - splits;
-
-        float weight = (1.0f/3.0f);
-
-        float moveScore = (moveRawScore/highestActionCount) * highestScore * weight;
-        float mergeScore = (mergeRawScore/highestActionCount) * highestScore * weight;
-        float splitsScore = (splitRawScore/highestActionCount) * highestScore * weight;
-
-        return (int) (moveScore + mergeScore + splitsScore);
+        float movePar = 10;
+        if (sceneIndex < LevelData.PAR_MOVES.Length) {
+            movePar = LevelData.PAR_MOVES[sceneIndex];
+        }
+        
+        float movesMade = moves + merges + splits;
+        return (int)(100.0f * ((movePar/movesMade) + (600.0f / timeElapsed)));
     }
 
-    private void SaveLevelStats(int moves, int merges, int splits, int score)
+    private void SaveLevelStats(int moves, int merges, int splits, int score, float timeElapsed)
     {
+        if (PlayerPrefs.HasKey($"level{sceneIndex}.score") && score < PlayerPrefs.GetInt($"level{sceneIndex}.score")) return;
+
         PlayerPrefs.SetInt($"level{sceneIndex}.moves", moves);
         PlayerPrefs.SetInt($"level{sceneIndex}.merges", merges);
         PlayerPrefs.SetInt($"level{sceneIndex}.splits", splits);
         PlayerPrefs.SetInt($"level{sceneIndex}.score", score);
-        PlayerPrefs.SetInt($"level{sceneIndex}.complete", 1);
+        PlayerPrefs.SetFloat($"level{sceneIndex}.elapsed", timeElapsed);
         PlayerPrefs.Save();
     }
 
     public void OnLevelBeat(LevelBeatContext ctx)
     {
         GameState.PAUSED = true;
+        float timeElapsed = Time.time - timeStart;
         
         // calc score and save level stats
-        int score = CalcScore(ctx.moves, ctx.merges, ctx.splits);
-        SaveLevelStats(ctx.moves, ctx.merges, ctx.splits, score);
+        int score = CalcScore(ctx.moves, ctx.merges, ctx.splits, timeElapsed);
+        SaveLevelStats(ctx.moves, ctx.merges, ctx.splits, score, timeElapsed);
 
         // Set level complete ui to correct values
         movesCount.text = DisplayScore(ctx.moves, 3);
         mergeCount.text = DisplayScore(ctx.merges, 3);
         splitCount.text = DisplayScore(ctx.splits, 3);
+        timeLabel.text = DisplayScore((int)timeElapsed, 3);
         scoreText.text = DisplayScore(score, 5);
 
         // Display Level Complete Panel

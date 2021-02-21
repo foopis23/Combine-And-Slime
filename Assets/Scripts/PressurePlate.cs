@@ -36,7 +36,9 @@ public class PressurePlate : MonoBehaviour
     // editor fields
     [SerializeField] private Tilemap groundMap;
     [SerializeField] private int startSize;
+    [SerializeField] private Sprite[] sprites;
     [SerializeField] private ButtonType buttonType;
+    [SerializeField] private SpriteRenderer spriteRenderer;
 
     // internal fields
     private GameObject ObjectPressingButton;
@@ -47,8 +49,11 @@ public class PressurePlate : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        if (groundMap == null)
+            groundMap = GameObject.FindGameObjectWithTag("FloorTiles").GetComponent<Tilemap>();
+        
         size = startSize;
-        transform.localScale = new Vector3(size + 1, size + 1, 0);
+        spriteRenderer.sprite = sprites[size];
         isTriggered = false;
         Vector3Int pos = groundMap.WorldToCell(transform.position);
         gridLocation = new Vector3Int(pos.x, pos.y, 0);
