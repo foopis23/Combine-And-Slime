@@ -278,7 +278,7 @@ public class SlimeController : MonoBehaviour
             mergeTarget = slimeFromTileLocation[tileLocation];
         }
 
-        currentSlime.Move(tileLocation);
+        CurrentSlime.Move(tileLocation);
         moveCount++;
     }
 
@@ -295,7 +295,7 @@ public class SlimeController : MonoBehaviour
             if (mergeTarget != null && !CurrentSlime.IsMoving)
             {
                 RemoveSlime(mergeTarget);
-                currentSlime.MergeWith(mergeTarget, mergeLocationFromTargetLocation[mergeTarget.TileLocation]);
+                CurrentSlime.MergeWith(mergeTarget, mergeLocationFromTargetLocation[mergeTarget.TileLocation]);
                 mergeCount++;
                 mergeTarget = null;
                 getMoves = true;

@@ -24,7 +24,7 @@ public class LevelExit : MonoBehaviour
         gridLocation = new Vector3Int(pos.x, pos.y, 0);
         transform.position = groundMap.CellToWorld(pos);
 
-        EventSystem.Current.RegisterEventListener<SlimeFinishMovingContext>(OnSlimeFinishedMoving);
+        EventSystem.Current.RegisterEventListener<ObjectFinishMovingContext>(OnObjectFinishedMoving);
     }
 
     private bool doesSlimeIsCoverExit(Slime slime)
@@ -43,9 +43,9 @@ public class LevelExit : MonoBehaviour
         return true;
     }
 
-    void OnSlimeFinishedMoving(SlimeFinishMovingContext ctx)
+    void OnObjectFinishedMoving(ObjectFinishMovingContext ctx)
     {   
-        if (doesSlimeIsCoverExit(ctx.Slime))
+        if (ctx.obj is Slime && doesSlimeIsCoverExit((Slime) ctx.obj))
         {
             EventSystem.Current.FireEvent(new LevelBeatContext(SlimeController.moveCount, SlimeController.mergeCount, SlimeController.splitCount));
         }

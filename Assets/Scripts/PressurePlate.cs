@@ -53,19 +53,19 @@ public class PressurePlate : MonoBehaviour
         Vector3Int pos = groundMap.WorldToCell(transform.position);
         gridLocation = new Vector3Int(pos.x, pos.y, 0);
         transform.position = groundMap.CellToWorld(pos);
-        EventSystem.Current.RegisterEventListener<SlimeFinishMovingContext>(OnSlimeFinishedMoving);
+        EventSystem.Current.RegisterEventListener<ObjectFinishMovingContext>(OnObjectFinishedMoving);
         EventSystem.Current.RegisterEventListener<SlimeSplitContext>(OnSlimeSplit);
         EventSystem.Current.RegisterEventListener<SlimeMergeContext>(OnSlimeMerge);
     }
 
 
-    private bool doesSlimeIsCoverButton(Slime slime)
+    private bool doesThingIsCoverButton(MovableObject thing)
     {
         for (int y = 0; y < size + 1; y++)
         {
             for (int x = 0; x < size + 1; x++)
             {
-                if (!slime.OccupiedTiles.Contains(new Vector3Int(gridLocation.x + x, gridLocation.y + y, slime.TileLocation.z)))
+                if (!thing.OccupiedTiles.Contains(new Vector3Int(gridLocation.x + x, gridLocation.y + y, thing.TileLocation.z)))
                 {
                     return false;
                 }
@@ -87,14 +87,14 @@ public class PressurePlate : MonoBehaviour
         EventSystem.Current.FireEvent(new DeactivateButtonContext(buttonType));
     }
 
-    void OnSlimeFinishedMoving(ObjectFinishMovingContext ctx)
+    void OnObjectFinishedMoving(ObjectFinishMovingContext ctx)
     {
-        bool buttonPressed = doesSlimeIsCoverButton(ctx.Slime);
+        bool buttonPressed = doesThingIsCoverButton(ctx.obj);
         
         if (!isTriggered && buttonPressed)
         {
-            activateButton(ctx.Slime.gameObject);
-        }else if (isTriggered && ObjectPressingButton.Equals(ctx.Slime.gameObject) && !buttonPressed) {
+            activateButton(ctx.obj.gameObject);
+        }else if (isTriggered && ObjectPressingButton.Equals(ctx.obj.gameObject) && !buttonPressed) {
             deactivateButton();
         }
     }
