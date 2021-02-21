@@ -89,7 +89,7 @@ public class Slime : MovableObject
         offset.Clamp(Vector3Int.zero, new Vector3Int(1, 1, 0));
 
         // create the new slime
-        GameObject newSlimeObject = Instantiate(SlimePrefab, transform.position, Quaternion.Euler(0, 0, 0));
+        GameObject newSlimeObject = Instantiate(SlimePrefab, tilemap.CellToWorld(TileLocation + offset), Quaternion.Euler(0, 0, 0));
         Slime newSlime = newSlimeObject.GetComponent<Slime>();
         newSlime.Init();
         newSlime.SetScale(Scale);
@@ -97,8 +97,8 @@ public class Slime : MovableObject
         EventSystem.Current.FireEvent(new SlimeSplitContext(this, newSlime));
 
         // move slimes
-        newSlime.Move(splitLocation);
         MoveInstant(TileLocation + offset);
+        newSlime.Move(splitLocation);
 
         return newSlime;
     }
