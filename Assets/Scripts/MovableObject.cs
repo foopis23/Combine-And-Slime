@@ -76,10 +76,10 @@ public abstract class MovableObject : MonoBehaviour
 
     public void MoveInstant(Vector3Int tileLocation)
     {
-        EventSystem.Current.FireEvent(new ObjectFinishMovingContext(this));
         transform.position = tilemap.CellToWorld(tileLocation);
         TileLocation = tileLocation;
         UpdateTiles();
+        EventSystem.Current.FireEvent(new ObjectFinishMovingContext(this));
     }
 
     protected void FinishedMove()

@@ -109,6 +109,8 @@ public class BeatLevelController : MonoBehaviour
 
         for (int i = 0; i < stars.Length; i++)
         {
+            if (sceneIndex > LevelData.STAR_SCORES.Length) break;
+            
             if (score > LevelData.STAR_SCORES[sceneIndex, i])
             {
                 stars[i].sprite = filledStar;
