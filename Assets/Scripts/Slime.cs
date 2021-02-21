@@ -50,6 +50,7 @@ public class Slime : MovableObject
     [SerializeField] private int StartingScale = 0;
     [SerializeField] private GameObject SlimePrefab;
     [SerializeField] public Animator Animator;
+    [SerializeField] public SpriteRenderer face;
 
     public override void Init()
 

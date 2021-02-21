@@ -400,6 +400,14 @@ public class SlimeController : MonoBehaviour
     {
         // CurrentSlime.Animator.SetBool("isSplit", performSplit);
 
+        foreach (Slime slime in allSlimes) {
+            if (slime.Equals(CurrentSlime)) {
+                slime.face.enabled = true;
+            }else{
+                slime.face.enabled = false;
+            }
+        }
+
         Vector3 mouseWorldPos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
         Vector3Int mouseTileLocation = tilemap.WorldToCell(new Vector3(mouseWorldPos.x, mouseWorldPos.y, 0));
 
