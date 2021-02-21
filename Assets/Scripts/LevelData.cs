@@ -11,4 +11,8 @@ public static class LevelData
         6,
         9
     };
+
+    public static int[,] STAR_SCORES = {
+        {0, 1, 1}
+    };
 }
