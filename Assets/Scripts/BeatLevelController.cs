@@ -86,6 +86,7 @@ public class BeatLevelController : MonoBehaviour
         PlayerPrefs.SetInt($"level{sceneIndex}.merges", merges);
         PlayerPrefs.SetInt($"level{sceneIndex}.splits", splits);
         PlayerPrefs.SetInt($"level{sceneIndex}.score", score);
+        PlayerPrefs.SetInt($"level{sceneIndex}.complete", 1);
         PlayerPrefs.Save();
     }
 
