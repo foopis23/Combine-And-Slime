@@ -49,12 +49,14 @@ public class Slime : MovableObject
     // editor
     [SerializeField] private int StartingScale = 0;
     [SerializeField] private GameObject SlimePrefab;
+    [SerializeField] public Animator Animator;
 
     public override void Init()
 
     {
         if(!initialized)
         {
+            Animator = GetComponent<Animator>();
             tilemap = GameObject.FindGameObjectWithTag("FloorTiles").GetComponent<Tilemap>();
             TileLocation = tilemap.WorldToCell(transform.position);
             Destination = transform.position;
@@ -67,7 +69,9 @@ public class Slime : MovableObject
         }
     }
 
-    protected override void UpdateObject() {}
+    protected override void UpdateObject() {
+
+    }
 
     public bool CanSplit()
     {

@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1906856735702751573}
   - component: {fileID: 1777268479453929734}
+  - component: {fileID: 4530187965464540737}
   m_Layer: 17
   m_Name: Slime Medium
   m_TagString: slime
@@ -48,6 +49,26 @@ MonoBehaviour:
   StoppingDistance: 0.001
   StartingScale: 1
   SlimePrefab: {fileID: 1906856735702751575}
+  Animator: {fileID: 0}
+--- !u!95 &4530187965464540737
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1906856735702751575}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: af917a168dac7884ab6efea3fa8791d9, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &4861785814858847676
 GameObject:
   m_ObjectHideFlags: 0
@@ -73,7 +94,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4861785814858847676}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.38, z: 2}
+  m_LocalPosition: {x: 0, y: 0.15, z: 2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1906856735702751573}

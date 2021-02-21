@@ -398,6 +398,8 @@ public class SlimeController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        CurrentSlime.Animator.SetBool("isSplit", performSplit);
+
         Vector3 mouseWorldPos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
         Vector3Int mouseTileLocation = tilemap.WorldToCell(new Vector3(mouseWorldPos.x, mouseWorldPos.y, 0));
 
@@ -449,8 +451,10 @@ public class SlimeController : MonoBehaviour
                     {
                         // split the slime to the selected location
                         Slime splitSlime = CurrentSlime;
+                        CurrentSlime.Animator.SetBool("isSplit", false);
                         CurrentSlime = CurrentSlime.Split(moveLocationFromMouseTileLocation[mouseTileLocation]);
                         AddSlime(splitSlime);
+                        CurrentSlime.Animator.SetBool("isSplit", false);
                         performSplit = false;
                         splitCount++;
                     }
@@ -469,6 +473,7 @@ public class SlimeController : MonoBehaviour
                         // cancel split
                         performSplit = false;
                         EventSystem.Current.FireEvent(new SlimeSelectCancelledContext(CurrentSlime));
+
                     }
                     else
                     {
