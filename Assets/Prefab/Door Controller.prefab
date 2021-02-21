@@ -47,12 +47,17 @@ MonoBehaviour:
   groundMap: {fileID: 0}
   doorAssociationData:
   - doorTile:
-    - {fileID: 0}
+    - {fileID: 11400000, guid: cf8c953f83b7fb241b57864fb6fdefe7, type: 2}
+    - {fileID: 11400000, guid: e9ae149b2261d544e82699283c871d38, type: 2}
   - doorTile:
-    - {fileID: 0}
+    - {fileID: 11400000, guid: d8b61494d1633fd46a3184540cdad7f4, type: 2}
+    - {fileID: 11400000, guid: 382d7c6c97c7afe43bdab34975c0e3d5, type: 2}
   - doorTile:
-    - {fileID: 0}
+    - {fileID: 11400000, guid: 49d2bbadcfbefe940add4a9d21f160b2, type: 2}
+    - {fileID: 11400000, guid: dfa33d5249943a3449d83821b00229e0, type: 2}
   - doorTile:
-    - {fileID: 0}
+    - {fileID: 11400000, guid: 48d2eb9b49367f947851449f678b3854, type: 2}
+    - {fileID: 11400000, guid: 7b497cac403f96c4199b034b1fe99031, type: 2}
   - doorTile:
-    - {fileID: 0}
+    - {fileID: 11400000, guid: e8eb37f6246c7e44ea31fd47bc0f366c, type: 2}
+    - {fileID: 11400000, guid: 15bf5ace65dc6574fa94f49a19cb0ce8, type: 2}

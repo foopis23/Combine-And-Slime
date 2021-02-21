@@ -2121,26 +2121,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2697519499840980387}
     m_Modifications:
-    - target: {fileID: 8177059248208691868, guid: 87dcc9633f65ac24aa3f475f1731ef3c, type: 3}
-      propertyPath: doorAssociationData.Array.data[0].doorTile.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 8177059248208691868, guid: 87dcc9633f65ac24aa3f475f1731ef3c, type: 3}
-      propertyPath: doorMap
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 8177059248208691868, guid: 87dcc9633f65ac24aa3f475f1731ef3c, type: 3}
-      propertyPath: groundMap
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 8177059248208691868, guid: 87dcc9633f65ac24aa3f475f1731ef3c, type: 3}
-      propertyPath: doorAssociationData.Array.data[0].doorTile.Array.data[0]
-      value: 
-      objectReference: {fileID: 11400000, guid: 84b8ebea10a504743b4fd389b278c338, type: 2}
-    - target: {fileID: 8177059248208691868, guid: 87dcc9633f65ac24aa3f475f1731ef3c, type: 3}
-      propertyPath: doorAssociationData.Array.data[0].doorTile.Array.data[1]
-      value: 
-      objectReference: {fileID: 11400000, guid: e8e2185197393f74f9d7e2da3ab930dd, type: 2}
     - target: {fileID: 8177059248208691869, guid: 87dcc9633f65ac24aa3f475f1731ef3c, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
