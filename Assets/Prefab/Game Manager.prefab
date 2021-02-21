@@ -1502,8 +1502,7 @@ MonoBehaviour:
   movementOverlay: {fileID: 0}
   cursorOverlay: {fileID: 0}
   startingSlime: {fileID: 0}
-  placedSlimes:
-  - {fileID: 0}
+  placedSlimes: []
 --- !u!1001 &2327297275186758136
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1834,15 +1833,15 @@ PrefabInstance:
       objectReference: {fileID: 11400000, guid: e8e2185197393f74f9d7e2da3ab930dd, type: 2}
     - target: {fileID: 8177059248208691869, guid: 87dcc9633f65ac24aa3f475f1731ef3c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.8498065
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8177059248208691869, guid: 87dcc9633f65ac24aa3f475f1731ef3c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -3.6169317
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8177059248208691869, guid: 87dcc9633f65ac24aa3f475f1731ef3c, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -1209.2742
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8177059248208691869, guid: 87dcc9633f65ac24aa3f475f1731ef3c, type: 3}
       propertyPath: m_LocalRotation.x
