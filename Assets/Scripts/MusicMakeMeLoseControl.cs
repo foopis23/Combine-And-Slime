@@ -17,15 +17,10 @@ public class MusicMakeMeLoseControl : MonoBehaviour
         if (GameObject.FindGameObjectsWithTag("music").Length > 1) {
             Destroy(this.gameObject);
         }
-    }
 
-
-    // Start is called before the first frame update
-    void Start()
-    {
         DontDestroyOnLoad(this.gameObject);
-        inMenu = true;
         SceneManager.activeSceneChanged += ActiveSceneChanged;
+        inMenu = true;
         puzzleMusic.volume = 0.0f;
         intro.Play();
     }
@@ -45,16 +40,13 @@ public class MusicMakeMeLoseControl : MonoBehaviour
     {
         inMenu = next.buildIndex == 0;
 
-        if (finishedIntro)
+        if (inMenu)
         {
-            if (inMenu)
-            {
-                animator.Play("fadeToMenu");
-            }
-            else
-            {
-                animator.Play("fadeToPuzzle");
-            }
+            animator.Play("fadeToMenu");
+        }
+        else
+        {
+            animator.Play("fadeToPuzzle");
         }
     }
 }
