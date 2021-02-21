@@ -276,7 +276,6 @@ public class SlimeController : MonoBehaviour
                         {
                             boxOffset.y = 0;
                         }
-                        Debug.Log(boxOffset);
                         foreach(Vector3Int boxTilePos in box.OccupiedTiles)
                         {
                             Vector3Int boxTestPos = boxTilePos + boxOffset;
