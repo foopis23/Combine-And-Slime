@@ -1,6 +1,23 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using CallbackEvents;
+
+public class SlimeSelectedContext : EventContext {
+    public Slime slime;
+
+    public SlimeSelectedContext(Slime slime) {
+        this.slime = slime;
+    }
+}
+
+public class SlimeSelectCancelledContext : EventContext {
+    public Slime slime;
+
+    public SlimeSelectCancelledContext(Slime slime) {
+        this.slime = slime;
+    }
+}
 
 public class SlimeController : MonoBehaviour
 {
@@ -363,11 +380,13 @@ public class SlimeController : MonoBehaviour
                     {
                         // cancel split
                         performSplit = false;
+                        EventSystem.Current.FireEvent(new SlimeSelectCancelledContext(CurrentSlime));
                     }
                     else
                     {
                         // initiate split
                         performSplit = true;
+                        EventSystem.Current.FireEvent(new SlimeSelectedContext(CurrentSlime));
                     }
 
                     getMoves = true;
