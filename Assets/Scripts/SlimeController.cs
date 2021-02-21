@@ -231,6 +231,7 @@ public class SlimeController : MonoBehaviour
 
                 if(performSplit)
                 {
+                    valid = true;
                     piss = true;
                     testPos += perpendicular;
                 }
