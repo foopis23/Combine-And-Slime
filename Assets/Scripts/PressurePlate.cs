@@ -58,6 +58,7 @@ public class PressurePlate : MonoBehaviour
         EventSystem.Current.RegisterEventListener<SlimeMergeContext>(OnSlimeMerge);
     }
 
+
     private bool doesSlimeIsCoverButton(Slime slime)
     {
         for (int y = 0; y < size + 1; y++)
@@ -86,7 +87,7 @@ public class PressurePlate : MonoBehaviour
         EventSystem.Current.FireEvent(new DeactivateButtonContext(buttonType));
     }
 
-    void OnSlimeFinishedMoving(SlimeFinishMovingContext ctx)
+    void OnSlimeFinishedMoving(ObjectFinishMovingContext ctx)
     {
         bool buttonPressed = doesSlimeIsCoverButton(ctx.Slime);
         
