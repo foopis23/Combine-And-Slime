@@ -9,6 +9,8 @@ public class SelectLevelButton : MonoBehaviour
     [SerializeField] private int levelNumber = 1; //this should equal to the scene number
     [SerializeField] private TMP_Text levelLabel;
     [SerializeField] private TMP_Text scoreLabel;
+    [SerializeField] private Image[] stars;
+    [SerializeField] private Sprite filledStar;
 
     // score
     private int score;
@@ -29,6 +31,12 @@ public class SelectLevelButton : MonoBehaviour
 
         if (score > -1) {
             scoreLabel.text = $"{score}";
+
+            for(int i=0; i < stars.Length; i++) {
+                if (score > LevelData.STAR_SCORES[levelNumber, i]) {
+                    stars[i].sprite = filledStar;
+                }
+            }
         }else{
             scoreLabel.text = "-";
         }

@@ -29,6 +29,8 @@ public class BeatLevelController : MonoBehaviour
     [SerializeField] private TMP_Text scoreText;
     [SerializeField] private Button nextButton;
     [SerializeField] private GameObject levelCompletelPanel;
+    [SerializeField] private Image[] stars;
+    [SerializeField] private Sprite filledStar;
 
     //internal properties
     int sceneIndex;
@@ -68,12 +70,13 @@ public class BeatLevelController : MonoBehaviour
     private int CalcScore(int moves, int merges, int splits, float timeElapsed)
     {
         float movePar = 10;
-        if (sceneIndex < LevelData.PAR_MOVES.Length) {
+        if (sceneIndex < LevelData.PAR_MOVES.Length)
+        {
             movePar = LevelData.PAR_MOVES[sceneIndex];
         }
-        
+
         float movesMade = moves + merges + splits;
-        return (int)(100.0f * ((movePar/movesMade) + (600.0f / timeElapsed)));
+        return (int)(100.0f * ((movePar / movesMade) + (600.0f / timeElapsed)));
     }
 
     private void SaveLevelStats(int moves, int merges, int splits, int score, float timeElapsed)
@@ -92,7 +95,7 @@ public class BeatLevelController : MonoBehaviour
     {
         GameState.PAUSED = true;
         float timeElapsed = Time.time - timeStart;
-        
+
         // calc score and save level stats
         int score = CalcScore(ctx.moves, ctx.merges, ctx.splits, timeElapsed);
         SaveLevelStats(ctx.moves, ctx.merges, ctx.splits, score, timeElapsed);
@@ -103,6 +106,14 @@ public class BeatLevelController : MonoBehaviour
         splitCount.text = DisplayScore(ctx.splits, 3);
         timeLabel.text = DisplayScore((int)timeElapsed, 3);
         scoreText.text = DisplayScore(score, 5);
+
+        for (int i = 0; i < stars.Length; i++)
+        {
+            if (score > LevelData.STAR_SCORES[sceneIndex, i])
+            {
+                stars[i].sprite = filledStar;
+            }
+        }
 
         // Display Level Complete Panel
         levelCompletelPanel.SetActive(true);
