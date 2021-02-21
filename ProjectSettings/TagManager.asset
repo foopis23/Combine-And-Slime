@@ -6,6 +6,7 @@ TagManager:
   tags:
   - slime
   - FloorTiles
+  - music
   layers:
   - Default
   - TransparentFX

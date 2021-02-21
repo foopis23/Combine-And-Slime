@@ -13,15 +13,21 @@ public class MusicMakeMeLoseControl : MonoBehaviour
     private bool inMenu;
     private bool finishedIntro;
 
+    private void Awake() {
+        if (GameObject.FindGameObjectsWithTag("music").Length > 1) {
+            Destroy(this.gameObject);
+        }
+    }
+
 
     // Start is called before the first frame update
     void Start()
     {
         DontDestroyOnLoad(this.gameObject);
-        intro.Play();
         inMenu = true;
         SceneManager.activeSceneChanged += ActiveSceneChanged;
         puzzleMusic.volume = 0.0f;
+        intro.Play();
     }
 
     // Update is called once per frame
