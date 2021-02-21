@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using CallbackEvents;
 using UnityEngine.SceneManagement;
 
@@ -31,6 +29,7 @@ public class SceneTransition : MonoBehaviour
 
     // called at the end of the "FadeIn" animation
     void OnFadeIn() {
+        GameState.PAUSED = false;
         panel.SetActive(false);
     }
 

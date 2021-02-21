@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Tilemaps;
 using CallbackEvents;
 
@@ -11,7 +9,6 @@ public enum ButtonType
     BLUE = 2,
     PURPLE = 3,
     BLACK = 4
-
 }
 
 public class ActivateButtonContext : EventContext
@@ -42,6 +39,7 @@ public class PressurePlate : MonoBehaviour
     [SerializeField] private ButtonType buttonType;
 
     // internal fields
+    private GameObject ObjectPressingButton;
     private bool isTriggered;
     private int size;
     private Vector3Int gridLocation;
@@ -54,36 +52,62 @@ public class PressurePlate : MonoBehaviour
         isTriggered = false;
         Vector3Int pos = groundMap.WorldToCell(transform.position);
         gridLocation = new Vector3Int(pos.x, pos.y, 0);
+        transform.position = groundMap.CellToWorld(pos);
+        EventSystem.Current.RegisterEventListener<SlimeFinishMovingContext>(OnSlimeFinishedMoving);
+        EventSystem.Current.RegisterEventListener<SlimeSplitContext>(OnSlimeSplit);
+        EventSystem.Current.RegisterEventListener<SlimeMergeContext>(OnSlimeMerge);
     }
 
-    void OnSlimeStartMoving(ObjectStartMovingContext ctx)
+
+    private bool doesSlimeIsCoverButton(Slime slime)
     {
-        if (isTriggered && ctx.obj.OccupiedTiles.Contains(new Vector3Int(gridLocation.x, gridLocation.y, ctx.obj.TileLocation.z)))
+        for (int y = 0; y < size + 1; y++)
         {
-            isTriggered = false;
-            EventSystem.Current.FireEvent(new DeactivateButtonContext(buttonType));
+            for (int x = 0; x < size + 1; x++)
+            {
+                if (!slime.OccupiedTiles.Contains(new Vector3Int(gridLocation.x + x, gridLocation.y + y, slime.TileLocation.z)))
+                {
+                    return false;
+                }
+            }
         }
+
+        return true;
+    }
+
+    private void activateButton(GameObject buttonPressor) {
+        ObjectPressingButton = buttonPressor;
+        isTriggered = true;
+        EventSystem.Current.FireEvent(new ActivateButtonContext(buttonType));
+    }
+
+    private void deactivateButton() {
+        ObjectPressingButton = null;
+        isTriggered = false;
+        EventSystem.Current.FireEvent(new DeactivateButtonContext(buttonType));
     }
 
     void OnSlimeFinishedMoving(ObjectFinishMovingContext ctx)
     {
-        Debug.Log("PISS BABY");
+        bool buttonPressed = doesSlimeIsCoverButton(ctx.Slime);
         
-        if (!isTriggered)
+        if (!isTriggered && buttonPressed)
         {
-            for (int y = 0; y < size; y++)
-            {
-                for (int x = 0; x < size; x++)
-                {
-                    if (!ctx.obj.OccupiedTiles.Contains(new Vector3Int(gridLocation.x + x, gridLocation.y + y, ctx.obj.TileLocation.z)))
-                    {
-                        return;
-                    }
-                }
-            }
+            activateButton(ctx.Slime.gameObject);
+        }else if (isTriggered && ObjectPressingButton.Equals(ctx.Slime.gameObject) && !buttonPressed) {
+            deactivateButton();
+        }
+    }
 
-            isTriggered = true;
-            EventSystem.Current.FireEvent(new ActivateButtonContext(buttonType));
+    void OnSlimeSplit(SlimeSplitContext ctx) {
+        if (ObjectPressingButton != null && (ObjectPressingButton.Equals(ctx.NewSlime.gameObject) || ObjectPressingButton.Equals(ctx.OldSlime.gameObject))) {
+            deactivateButton();
+        }
+    }
+
+    void OnSlimeMerge(SlimeMergeContext ctx) {
+        if (ObjectPressingButton != null && (ObjectPressingButton.Equals(ctx.Assimilated.gameObject) || ObjectPressingButton.Equals(ctx.Slime.gameObject))) {
+            deactivateButton();
         }
     }
 }

@@ -4,6 +4,26 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using CallbackEvents;
 
+public class SlimeSplitContext : EventContext {
+    public Slime OldSlime;
+    public Slime NewSlime;
+
+    public SlimeSplitContext(Slime OldSlime, Slime NewSlime) {
+        this.OldSlime = OldSlime;
+        this.NewSlime = NewSlime;
+    }
+}
+
+public class SlimeMergeContext : EventContext {
+    public Slime Slime;
+    public Slime Assimilated;
+
+    public SlimeMergeContext(Slime Slime, Slime Assimilated) {
+        this.Slime = Slime;
+        this.Assimilated = Assimilated;
+    }
+}
+
 public class CannotMergeException : Exception
 {
     public CannotMergeException() {}
@@ -31,6 +51,7 @@ public class Slime : MovableObject
     [SerializeField] private GameObject SlimePrefab;
 
     public override void Init()
+
     {
         if(!initialized)
         {
@@ -66,14 +87,20 @@ public class Slime : MovableObject
         SetScale(Scale - 1);
         Vector3Int offset = splitLocation - TileLocation;
         offset.Clamp(Vector3Int.zero, new Vector3Int(1, 1, 0));
-        MoveInstant(TileLocation + offset);
+
 
         // create the new slime
         GameObject newSlimeObject = Instantiate(SlimePrefab, transform.position, Quaternion.Euler(0, 0, 0));
         Slime newSlime = newSlimeObject.GetComponent<Slime>();
         newSlime.Init();
         newSlime.SetScale(Scale);
+
+        EventSystem.Current.FireEvent(new SlimeSplitContext(this, newSlime));
+
+        // move slimes
+        MoveInstant(TileLocation + offset);
         newSlime.Move(splitLocation);
+
         return newSlime;
     }
 
@@ -81,8 +108,11 @@ public class Slime : MovableObject
     {
         if(!CanMergeWith(other)) throw new CannotMergeException();
 
+        EventSystem.Current.FireEvent(new SlimeMergeContext(this, other));
+
         SetScale(Scale + 1);
         MoveInstant(mergeLocation);
+
         Destroy(other.gameObject);
     }
     

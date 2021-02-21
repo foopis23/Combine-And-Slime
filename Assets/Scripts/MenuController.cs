@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class MenuController : MonoBehaviour
 {
@@ -45,5 +43,9 @@ public class MenuController : MonoBehaviour
     {
         MainMenuAnimator.Play("SlideRightIn");
         LevelSelectAnimator.Play("SlideRightOut");
+    }
+
+    public void OnQuitClicked() {
+        Application.Quit(0);
     }
 }
