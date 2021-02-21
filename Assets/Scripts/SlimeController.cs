@@ -14,6 +14,7 @@ public class SlimeController : MonoBehaviour
     [SerializeField] private TileBase possibleMoveTile;
     [SerializeField] private TileBase possibleSplitTile;
     [SerializeField] private TileBase possibleMergeTile;
+    [SerializeField] private TileBase cancelTile;
     [SerializeField] private Tilemap tilemap;
     [SerializeField] private Tilemap movementOverlay;
     [SerializeField] private Tilemap cursorOverlay;
@@ -261,9 +262,16 @@ public class SlimeController : MonoBehaviour
         foreach(Vector3Int tilePos in CurrentSlime.OccupiedTiles)
         {
             moveLocationFromMouseTileLocation.Remove(tilePos);
-            if(CurrentSlime.CanSplit() && !performSplit)
+            if(CurrentSlime.CanSplit())
             {
-                movementOverlay.SetTile(tilePos, possibleSplitTile);
+                if(performSplit)
+                {
+                    movementOverlay.SetTile(tilePos, cancelTile);
+                }
+                else
+                {
+                    movementOverlay.SetTile(tilePos, possibleSplitTile);
+                }
             }
         }
     }
@@ -351,8 +359,17 @@ public class SlimeController : MonoBehaviour
                 }
                 else if(CurrentSlime.OccupiedTiles.Contains(mouseTileLocation) && CurrentSlime.CanSplit())
                 {
-                    // initiate split
-                    performSplit = true;
+                    if(performSplit)
+                    {
+                        // cancel split
+                        performSplit = false;
+                    }
+                    else
+                    {
+                        // initiate split
+                        performSplit = true;
+                    }
+
                     getMoves = true;
                 }
             }

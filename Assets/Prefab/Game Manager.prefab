@@ -1497,6 +1497,7 @@ MonoBehaviour:
   possibleMoveTile: {fileID: 11400000, guid: aea01de6c9034ea4a9ad5ffc99f11140, type: 2}
   possibleSplitTile: {fileID: 11400000, guid: d59c21af7334ae04a9795cf95a5d4225, type: 2}
   possibleMergeTile: {fileID: 11400000, guid: f6d972cb5b5b7a24ab4518ed855ba50e, type: 2}
+  cancelTile: {fileID: 11400000, guid: f57ac0657fafb4f4d814579e1551c4b9, type: 2}
   tilemap: {fileID: 0}
   movementOverlay: {fileID: 0}
   cursorOverlay: {fileID: 0}
