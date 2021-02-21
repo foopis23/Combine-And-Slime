@@ -210,11 +210,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 290544333833500702, guid: 671b5f20d53edf8478324a67a6049a2a, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 290544333833500702, guid: 671b5f20d53edf8478324a67a6049a2a, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -3
+      value: -13
       objectReference: {fileID: 0}
     - target: {fileID: 290544333833500702, guid: 671b5f20d53edf8478324a67a6049a2a, type: 3}
       propertyPath: m_LocalPosition.z
@@ -272,10 +272,6 @@ PrefabInstance:
     - target: {fileID: 2697519498976867712, guid: eabf82737da61684bb87e1cc8ef832c4, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: OnNextLevel
-      objectReference: {fileID: 0}
-    - target: {fileID: 2697519498977863389, guid: eabf82737da61684bb87e1cc8ef832c4, type: 3}
-      propertyPath: doorAssociationData.Array.size
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2697519498977863389, guid: eabf82737da61684bb87e1cc8ef832c4, type: 3}
       propertyPath: doorMap
@@ -1323,7 +1319,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2863378071716971469}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -10, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2863378069963733258}
