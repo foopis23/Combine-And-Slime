@@ -861,6 +861,17 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1527762011 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1777268479453929734, guid: 170c38a56be945e429056234cc12622b, type: 3}
+  m_PrefabInstance: {fileID: 621722552}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1252618ab0a534e44b24d0e302934d1b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1587307301
 GameObject:
   m_ObjectHideFlags: 0
@@ -1378,6 +1389,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 9014156167934684885, guid: 4165bd1e1fee3564abec61a91c40806b, type: 3}
   m_PrefabInstance: {fileID: 9014156169724038427}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1915872074 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6616535746810711711, guid: 2417512f1734b754cb298486e4e0c9d7, type: 3}
+  m_PrefabInstance: {fileID: 553332872}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1252618ab0a534e44b24d0e302934d1b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1978646947
 GameObject:
   m_ObjectHideFlags: 0
@@ -2719,6 +2741,10 @@ PrefabInstance:
       value: Game Manager
       objectReference: {fileID: 0}
     - target: {fileID: 2697519500099956179, guid: eabf82737da61684bb87e1cc8ef832c4, type: 3}
+      propertyPath: placedSlimes.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2697519500099956179, guid: eabf82737da61684bb87e1cc8ef832c4, type: 3}
       propertyPath: tilemap
       value: 
       objectReference: {fileID: 1978646950}
@@ -2733,11 +2759,11 @@ PrefabInstance:
     - target: {fileID: 2697519500099956179, guid: eabf82737da61684bb87e1cc8ef832c4, type: 3}
       propertyPath: startingSlime
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1527762011}
     - target: {fileID: 2697519500099956179, guid: eabf82737da61684bb87e1cc8ef832c4, type: 3}
       propertyPath: placedSlimes.Array.data[0]
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1915872074}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: eabf82737da61684bb87e1cc8ef832c4, type: 3}
 --- !u!1001 &9014156169724038427
