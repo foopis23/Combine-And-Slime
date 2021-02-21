@@ -32,12 +32,18 @@ public class Slime : MovableObject
 
     public override void Init()
     {
-        tilemap = GameObject.FindGameObjectWithTag("FloorTiles").GetComponent<Tilemap>();
-        TileLocation = tilemap.WorldToCell(transform.position);
-        OccupiedTiles = new HashSet<Vector3Int>();
-        Scale = StartingScale;
-        transform.localScale = SLIME_SCALES[Scale];
-        UpdateTiles();
+        if(!initialized)
+        {
+            tilemap = GameObject.FindGameObjectWithTag("FloorTiles").GetComponent<Tilemap>();
+            TileLocation = tilemap.WorldToCell(transform.position);
+            Destination = transform.position;
+            OccupiedTiles = new HashSet<Vector3Int>();
+            Scale = StartingScale;
+            transform.localScale = SLIME_SCALES[Scale];
+            UpdateTiles();
+
+            initialized = true;
+        }
     }
 
     protected override void UpdateObject() {}
@@ -80,7 +86,7 @@ public class Slime : MovableObject
         Destroy(other.gameObject);
     }
     
-    private void SetScale(int newScale)
+    public void SetScale(int newScale)
     {
         Scale = newScale;
         transform.localScale = SLIME_SCALES[Scale];

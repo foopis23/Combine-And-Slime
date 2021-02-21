@@ -279,7 +279,7 @@ public class SlimeController : MonoBehaviour
         Vector3 mouseWorldPos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
         Vector3Int mouseTileLocation = tilemap.WorldToCell(new Vector3(mouseWorldPos.x, mouseWorldPos.y, 0));
 
-        bool isValidSelectionTile = moveLocationFromMouseTileLocation.ContainsKey(mouseTileLocation);
+        bool isValidSelectionTile = mouseTileLocation != null && moveLocationFromMouseTileLocation.ContainsKey(mouseTileLocation);
 
         if(!CurrentSlime.IsMoving)
         {

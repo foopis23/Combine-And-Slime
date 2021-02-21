@@ -27,7 +27,6 @@ public abstract class MovableObject : MonoBehaviour
 
     //internal
     protected Tilemap tilemap;
-    protected Vector3 destination;
     protected bool atDestination = true;
     protected bool initialized = false;
 
@@ -37,6 +36,7 @@ public abstract class MovableObject : MonoBehaviour
             return !atDestination;
         }
     }
+    public Vector3 Destination { get; protected set; }
     public int Scale { get; protected set; }
     public Vector3Int TileLocation { get; protected set; }
     public HashSet<Vector3Int> OccupiedTiles { get; protected set; }
@@ -47,11 +47,7 @@ public abstract class MovableObject : MonoBehaviour
     // Start is called before the first frame update
     protected virtual void Start()
     {
-        if(!initialized)
-        {
-            Init();
-            initialized = true;
-        }
+        Init();
     }
 
     // Update is called once per frame
@@ -61,8 +57,8 @@ public abstract class MovableObject : MonoBehaviour
 
         if (!atDestination)
         {
-            float dist = Vector3.Distance(transform.position, destination);
-            transform.position = Vector3.MoveTowards(transform.position, destination, MoveSpeed * Time.deltaTime);
+            float dist = Vector3.Distance(transform.position, Destination);
+            transform.position = Vector3.MoveTowards(transform.position, Destination, MoveSpeed * Time.deltaTime);
 
             atDestination = dist < StoppingDistance;
 
@@ -92,7 +88,7 @@ public abstract class MovableObject : MonoBehaviour
 
     protected void SetDestination(Vector3 pos)
     {
-        destination = pos;
+        Destination = pos;
         atDestination = false;
     }
 
@@ -103,7 +99,7 @@ public abstract class MovableObject : MonoBehaviour
         {
             for(int k = 0; k < Scale + 1; k++)
             {
-                OccupiedTiles.Add(new Vector3Int(TileLocation.x + h, TileLocation.y + k, TileLocation.z));
+                OccupiedTiles.Add(TileLocation + new Vector3Int(h, k, 0));
             }
         }
     }
