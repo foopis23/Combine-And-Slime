@@ -9,7 +9,9 @@ public static class LevelData
         3,
         4,
         6,
-        9
+        9,
+        5,
+        27
     };
 
     public static int[,] STAR_SCORES = {
@@ -17,6 +19,8 @@ public static class LevelData
         {0, 18500, 33000},
         {0, 10000, 18000},
         {0, 5000, 8000},
+        {0, 3000, 4000},
         {0, 5000, 8000},
+        {0, 1000, 5000}
     };
 }
