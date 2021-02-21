@@ -29,18 +29,7 @@ public class LevelExit : MonoBehaviour
 
     private bool doesSlimeIsCoverExit(Slime slime)
     {
-        for (int y = 0; y < size + 1; y++)
-        {
-            for (int x = 0; x < size + 1; x++)
-            {
-                if (!slime.OccupiedTiles.Contains(new Vector3Int(gridLocation.x + x, gridLocation.y + y, slime.TileLocation.z)))
-                {
-                    return false;
-                }
-            }
-        }
-
-        return true;
+        return slime.TileLocation == gridLocation && slime.Scale == size;
     }
 
     void OnObjectFinishedMoving(ObjectFinishMovingContext ctx)
