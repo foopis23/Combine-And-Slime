@@ -31,6 +31,7 @@ public class BeatLevelController : MonoBehaviour
 
     //internal properties
     int sceneIndex;
+    float timeStart;
 
     // Start is called before the first frame update
     void Start()
@@ -41,6 +42,8 @@ public class BeatLevelController : MonoBehaviour
         {
             nextButton.gameObject.SetActive(false);
         }
+
+        timeStart = Time.time;
 
         EventSystem.Current.RegisterEventListener<LevelBeatContext>(OnLevelBeat);
     }
